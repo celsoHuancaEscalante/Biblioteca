@@ -10,7 +10,7 @@ public class GeneroAD {
     
     public List<Genero> obtenerTodos(){
         List<Genero> generos=new ArrayList<>();
-        String sql= "SELECT idGnero, nombre FROM genero";
+        String sql= "SELECT idGenero, nombre FROM genero";
         
         try (Connection conn= ConnectMySQL.conn();
              Statement stmt= conn.createStatement();

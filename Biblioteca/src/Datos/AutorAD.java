@@ -10,7 +10,7 @@ public class AutorAD {
     
     public List<Autor> obtenerTodos() {
         List<Autor> autores = new ArrayList<>();
-        String sql = "SELECT idAutor, nombreApellido FROM autor";
+        String sql = "SELECT idAutor, primerNombre, segundoNombre, primerApellido, segundoApellido FROM autor";
         
         try (Connection conn = ConnectMySQL.conn();
              Statement stmt = conn.createStatement();
@@ -19,7 +19,10 @@ public class AutorAD {
             while (rs.next()) {
                 Autor autor = new Autor(
                     rs.getInt("idAutor"),
-                    rs.getString("Nombre Apellido")
+                    rs.getString("primerNombre"),
+                    rs.getString("segundoNombre"),
+                    rs.getString("primerApellido"),
+                    rs.getString("segundoApellido")
                 );
                 autores.add(autor);
             }
@@ -29,25 +32,30 @@ public class AutorAD {
         
         return autores;
     }
-    
-    /**
-     * Busca autores por nombre o apellido
-     */
-    public List<Autor> buscarPorNombre(String nombre) {
+
+    public List<Autor> buscarPorNombre(String texto) {
         List<Autor> autores = new ArrayList<>();
-        String sql = "SELECT idAutor, nombreApellido FROM autor WHERE nombreApellido LIKE ?";
-        
+        String sql = "SELECT idAutor, primerNombre, segundoNombre, primerApellido, segundoApellido " +
+                     "FROM autor WHERE primerNombre LIKE ? OR segundoNombre LIKE ? OR " +
+                     "primerApellido LIKE ? OR segundoApellido LIKE ?";
+                
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setString(1, "%" + nombre + "%");
-            pstmt.setString(2, "%" + nombre + "%");
+            String busqueda = "%" + texto + "%";
+            pstmt.setString(1, busqueda);
+            pstmt.setString(2, busqueda);
+            pstmt.setString(3, busqueda);
+            pstmt.setString(4, busqueda);
             ResultSet rs = pstmt.executeQuery();
             
             while (rs.next()) {
                 Autor autor = new Autor(
                     rs.getInt("idAutor"),
-                    rs.getString("nombreApellido")
+                    rs.getString("primerNombre"),
+                    rs.getString("segundoNombre"),
+                    rs.getString("primerApellido"),
+                    rs.getString("segundoApellido")
                 );
                 autores.add(autor);
             }
@@ -58,17 +66,18 @@ public class AutorAD {
         return autores;
     }
     
-    /**
-     * Inserta un nuevo autor
-     */
+
     public boolean insertar(Autor autor) {
-        String sql = "INSERT INTO autor (primerNombre, segundoNombre, primerApellido, " +
-                     "segundoApellido) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO autor (primerNombre, segundoNombre, primerApellido, segundoApellido) " +
+                     "VALUES (?, ?, ?, ?)";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setString(1, autor.getNombreApellido());
+            pstmt.setString(1, autor.getPrimerNombre());
+            pstmt.setString(2, autor.getSegundoNombre());
+            pstmt.setString(3, autor.getPrimerApellido());
+            pstmt.setString(4, autor.getSegundoApellido());
             
             int filasAfectadas = pstmt.executeUpdate();
             return filasAfectadas > 0;
@@ -79,9 +88,7 @@ public class AutorAD {
         }
     }
     
-    /**
-     * Actualiza un autor existente
-     */
+
     public boolean actualizar(Autor autor) {
         String sql = "UPDATE autor SET primerNombre = ?, segundoNombre = ?, " +
                      "primerApellido = ?, segundoApellido = ? WHERE idAutor = ?";
@@ -89,8 +96,11 @@ public class AutorAD {
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setString(1, autor.getNombreApellido());
-            pstmt.setInt(2, autor.getIdAutor());
+            pstmt.setString(1, autor.getPrimerNombre());
+            pstmt.setString(2, autor.getSegundoNombre());
+            pstmt.setString(3, autor.getPrimerApellido());
+            pstmt.setString(4, autor.getSegundoApellido());
+            pstmt.setInt(5, autor.getIdAutor());
             
             int filasAfectadas = pstmt.executeUpdate();
             return filasAfectadas > 0;
@@ -101,9 +111,7 @@ public class AutorAD {
         }
     }
     
-    /**
-     * Elimina un autor
-     */
+
     public boolean eliminar(int idAutor) {
         String sql = "DELETE FROM autor WHERE idAutor = ?";
         

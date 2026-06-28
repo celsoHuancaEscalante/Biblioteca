@@ -30,10 +30,8 @@ public List<Editorial> obtenerTodos() {
         
         return editoriales;
     }
-    
-    /**
-     * Busca editoriales por nombre
-     */
+
+
     public List<Editorial> buscarPorNombre(String nombre) {
         List<Editorial> editoriales = new ArrayList<>();
         String sql = "SELECT idEditorial, nombre FROM editorial WHERE nombre LIKE ?";
@@ -58,9 +56,7 @@ public List<Editorial> obtenerTodos() {
         return editoriales;
     }
     
-    /**
-     * Inserta una nueva editorial
-     */
+
     public boolean insertar(Editorial editorial) {
         String sql = "INSERT INTO editorial (nombre) VALUES (?)";
         
@@ -77,9 +73,7 @@ public List<Editorial> obtenerTodos() {
         }
     }
     
-    /**
-     * Actualiza una editorial existente
-     */
+
     public boolean actualizar(Editorial editorial) {
         String sql = "UPDATE editorial SET nombre = ? WHERE idEditorial = ?";
         
@@ -98,9 +92,7 @@ public List<Editorial> obtenerTodos() {
         }
     }
     
-    /**
-     * Elimina una editorial
-     */
+    
     public boolean eliminar(int idEditorial) {
         String sql = "DELETE FROM editorial WHERE idEditorial = ?";
         

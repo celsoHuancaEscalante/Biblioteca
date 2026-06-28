@@ -2,7 +2,6 @@
 package Datos;
 
 import ClaseBase.Ejemplar;
-import ClaseBase.Libro;
 import ConnectXampp.ConnectMySQL;
 import java.sql.*;
 import java.util.*;

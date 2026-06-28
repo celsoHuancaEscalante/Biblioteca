@@ -11,7 +11,7 @@ public class LibroAD {
     public List<Libro> obtenerTodos() {
         List<Libro> libros = new ArrayList<>();
         String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
-                     "a.idAutor, a.nombreApellido, " +
+                     "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
                      "g.idGenero, g.nombre AS genero_nombre " +
                      "FROM libro l " +
@@ -27,7 +27,11 @@ public class LibroAD {
             while (rs.next()) {
                 Autor autor = new Autor(
                     rs.getInt("idAutor"),
-                    rs.getString("nombreApellido"));
+                    rs.getString("primerNombre"),
+                    rs.getString("segundoNombre"),
+                    rs.getString("primerApellido"),
+                    rs.getString("segundoApellido")
+                );
                 
                 Editorial editorial = new Editorial(
                     rs.getInt("idEditorial"),
@@ -58,13 +62,11 @@ public class LibroAD {
         return libros;
     }
     
-    /**
-     * BÚSQUEDA POR TÍTULO (autocompletado)
-     */
+
     public List<Libro> buscarPorTitulo(String titulo) {
         List<Libro> libros = new ArrayList<>();
         String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
-                     "a.idAutor, a.nombreApellido, " +
+                     "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
                      "g.idGenero, g.nombre AS genero_nombre " +
                      "FROM libro l " +
@@ -83,7 +85,11 @@ public class LibroAD {
             while (rs.next()) {
                 Autor autor = new Autor(
                     rs.getInt("idAutor"),
-                    rs.getString("nombreApellido"));
+                    rs.getString("primerNombre"),
+                    rs.getString("segundoNombre"),
+                    rs.getString("primerApellido"),
+                    rs.getString("segundoApellido")
+                );
                 
                 Editorial editorial = new Editorial(
                     rs.getInt("idEditorial"),
@@ -114,15 +120,13 @@ public class LibroAD {
         return libros;
     }
     
-    /**
-     * FILTRADO POR GÉNERO Y AUTOR
-     */
+
     public List<Libro> filtrar(Genero genero, Autor autor) {
         List<Libro> libros = new ArrayList<>();
         
         StringBuilder sql = new StringBuilder(
             "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
-            "a.idAutor, a.nombreApellido, " +
+            "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
             "e.idEditorial, e.nombre AS editorial_nombre, " +
             "g.idGenero, g.nombre AS genero_nombre " +
             "FROM libro l " +
@@ -149,7 +153,11 @@ public class LibroAD {
             while (rs.next()) {
                 Autor a = new Autor(
                     rs.getInt("idAutor"),
-                    rs.getString("nombreApellido"));
+                    rs.getString("primerNombre"),
+                    rs.getString("segundoNombre"),
+                    rs.getString("primerApellido"),
+                    rs.getString("segundoApellido")
+                );
                 
                 Editorial e = new Editorial(
                     rs.getInt("idEditorial"),
@@ -180,9 +188,7 @@ public class LibroAD {
         return libros;
     }
     
-    /**
-     * INSERTA UN NUEVO LIBRO
-     */
+
     public int insertar(Libro libro) {
         String sql = "INSERT INTO libro (titulo, idAutor, idEditorial, idGenero, " +
                      "anioPublicacion, stock) VALUES (?, ?, ?, ?, ?, ?)";
@@ -213,9 +219,7 @@ public class LibroAD {
         return -1;
     }
     
-    /**
-     * ACTUALIZA UN LIBRO
-     */
+
     public boolean actualizar(Libro libro) {
         String sql = "UPDATE libro SET titulo = ?, idAutor = ?, idEditorial = ?, " +
                      "idGenero = ?, anioPublicacion = ?, stock = ? WHERE idLibro = ?";
@@ -240,9 +244,7 @@ public class LibroAD {
         }
     }
     
-    /**
-     * ELIMINA UN LIBRO
-     */
+
     public boolean eliminar(int idLibro) {
         String sql = "DELETE FROM libro WHERE idLibro = ?";
         
@@ -259,12 +261,10 @@ public class LibroAD {
         }
     }
     
-    /**
-     * OBTIENE UN LIBRO POR ID
-     */
+
     public Libro obtenerPorId(int idLibro) {
         String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
-                     "a.idAutor, a.nombreApellido, " +
+                     "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
                      "g.idGenero, g.nombre AS genero_nombre " +
                      "FROM libro l " +
@@ -282,7 +282,11 @@ public class LibroAD {
             if (rs.next()) {
                 Autor autor = new Autor(
                     rs.getInt("idAutor"),
-                    rs.getString("nombreApellido"));
+                    rs.getString("primerNombre"),
+                    rs.getString("segundoNombre"),
+                    rs.getString("primerApellido"),
+                    rs.getString("segundoApellido")
+                );
                 
                 Editorial editorial = new Editorial(
                     rs.getInt("idEditorial"),
