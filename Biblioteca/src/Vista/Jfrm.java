@@ -8,7 +8,6 @@ import Datos.*;
 import ClaseBase.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.List;
 
 public class Jfrm extends javax.swing.JFrame {
