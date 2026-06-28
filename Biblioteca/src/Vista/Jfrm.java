@@ -49,7 +49,7 @@ public class Jfrm extends javax.swing.JFrame {
     
     private void inicializarTabla() {
     modeloTabla = new DefaultTableModel(
-        new String[]{"Título", "Autor", "Editorial", "Unidades", "Estado"},
+        new String[]{"ID", "Título", "Autor", "Editorial", "Género", "Unidades", "Estado"},
         0
     ) {
         @Override
@@ -92,16 +92,19 @@ public class Jfrm extends javax.swing.JFrame {
         String estado = disponibles > 0 ? "Disponible" : "No Disponible";
         
         modeloTabla.addRow(new Object[]{
+            libro.getIdLibro(),
             libro.getTitulo(),
             libro.getAutor().toString(),
             libro.getEditorial().getNombre(),
+            libro.getGenero().getNombre(),
             libro.getStock(),
             estado
         });
     }
     
+    int totalEjemplares = calcularTotalEjemplares(libros);
     // Actualizar label de total
-    lblTotalLibros.setText("Total de Libros: " + libros.size());
+    lblTotalLibros.setText("" + totalEjemplares);
 }
     
     private void buscarEnTiempo() {
@@ -120,20 +123,30 @@ public class Jfrm extends javax.swing.JFrame {
         String estado = disponibles > 0 ? "Disponible" : "No Disponible";
         
         modeloTabla.addRow(new Object[]{
+            libro.getIdLibro(),
             libro.getTitulo(),
             libro.getAutor().toString(),
             libro.getEditorial().getNombre(),
+            libro.getGenero().getNombre(),
             libro.getStock(),
             estado
         });
     }
     
-    lblTotalLibros.setText("Total de Libros: " + libros.size());
+    lblTotalLibros.setText("" + libros.size());
 }
     
     public void actualizarTablaDesdeDialog() {
     cargarComboBoxes();
     cargarTabla();
+}
+    
+    private int calcularTotalEjemplares(List<Libro> libros) {
+    int total = 0;
+    for (Libro libro : libros) {
+        total += libro.getStock();
+    }
+    return total;
 }
     
     @SuppressWarnings("unchecked")
@@ -189,7 +202,7 @@ public class Jfrm extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 102));
 
-        jLabel4.setText("Total libros");
+        jLabel4.setText("Total de libros");
 
         lblTotalLibros.setText("0");
 
@@ -198,14 +211,13 @@ public class Jfrm extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(38, 38, 38)
-                        .addComponent(lblTotalLibros, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addGap(17, 17, 17)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(43, Short.MAX_VALUE)
+                .addComponent(lblTotalLibros, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,15 +364,17 @@ public class Jfrm extends javax.swing.JFrame {
             String estado = disponibles > 0 ? "Disponible" : "No Disponible";
         
             modeloTabla.addRow(new Object[]{
+                libro.getIdLibro(),
                 libro.getTitulo(),
                 libro.getAutor().toString(),
                 libro.getEditorial().getNombre(),
+                libro.getGenero().getNombre(),
                 libro.getStock(),
                 estado
             });
         }
     
-        lblTotalLibros.setText("Total de Libros: " + libros.size());
+        lblTotalLibros.setText("" + libros.size());
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed

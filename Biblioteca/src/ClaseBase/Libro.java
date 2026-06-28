@@ -6,8 +6,8 @@ public class Libro implements Mostrar{
    private Autor autor;
    private Editorial editorial;
    private String titulo;
-   private int stock;
    private int anioPublicacion;
+   private int stock;
 
     public Libro(int idLibro, Genero genero, Autor autor, Editorial editorial, String titulo, int stock, int anioPublicacion) {
         this.idLibro = idLibro;

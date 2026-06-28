@@ -60,10 +60,16 @@ public class Autor implements Mostrar{
     @Override
     public String mostrarDatos() {
         StringBuilder sb = new StringBuilder();
-        if (primerNombre != null) sb.append(primerNombre).append(" ");
+        if (primerNombre != null && !primerNombre.isEmpty()) sb.append(primerNombre).append(" ");
         if (segundoNombre != null && !segundoNombre.isEmpty()) sb.append(segundoNombre).append(" ");
-        if (primerApellido != null) sb.append(primerApellido).append(" ");
+        if (primerApellido != null && !primerApellido.isEmpty()) sb.append(primerApellido).append(" ");
         if (segundoApellido != null && !segundoApellido.isEmpty()) sb.append(segundoApellido);
         return sb.toString().trim();
     }
+    
+    @Override
+    public String toString() {
+    return mostrarDatos();
+    }
+    
 }
