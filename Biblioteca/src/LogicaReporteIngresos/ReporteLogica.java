@@ -42,13 +42,14 @@ public class ReporteLogica {
         ArrayList <ReporteFila> lista = new ArrayList<>();
         // Consulta
         String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria "
+           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
            + "JOIN clientes c ON p.dni = c.dni "
            + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
            + "JOIN libros l ON e.id_libro = l.id_libro "
            + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
+           + "JOIN generos g ON l.id_genero = g.id_genero "
            + "WHERE p.fecha_devolucion IS NOT NULL"
            + " ORDER BY p.id_prestamo ASC";
         
@@ -75,8 +76,13 @@ public class ReporteLogica {
                 prestamo.setFechaVencimiento(rs.getDate("fecha_vencimiento").toLocalDate());
                 prestamo.setCliente(cliente);
                 
+                Genero genero = new Genero();
+                genero.setNombre(rs.getString("nombre_genero"));
+                
+                
                 Libro libro = new Libro();
                 libro.setTitulo(rs.getString("titulo"));
+                libro.setGenero(genero);
                 
                 Ejemplar ejemplar = new Ejemplar();
                 ejemplar.setIdEjemplar(rs.getInt("id_ejemplar"));
@@ -111,13 +117,14 @@ public class ReporteLogica {
        ArrayList <ReporteFila> lista = new ArrayList<>();
        // Consulta
         String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria "
+           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
            + "JOIN clientes c ON p.dni = c.dni "
            + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
            + "JOIN libros l ON e.id_libro = l.id_libro "
            + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
+           + "JOIN generos g ON l.id_genero = g.id_genero " 
            + "WHERE p.fecha_prestamo BETWEEN ? AND ? " 
            + "AND p.fecha_devolucion IS NOT NULL"
            + " ORDER BY p.id_prestamo ASC";
@@ -153,9 +160,13 @@ public class ReporteLogica {
                 prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
                 prestamo.setFechaVencimiento(rs.getDate("fecha_vencimiento").toLocalDate());
                 prestamo.setCliente(cliente);
+                
+                Genero genero = new Genero();
+                genero.setNombre(rs.getString("nombre_genero"));
 
                 Libro libro = new Libro();
                 libro.setTitulo(rs.getString("titulo"));
+                libro.setGenero(genero);
                 
                 Ejemplar ejemplar = new Ejemplar();
                 ejemplar.setIdEjemplar(rs.getInt("id_ejemplar"));

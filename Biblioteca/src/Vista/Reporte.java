@@ -301,8 +301,17 @@ public class Reporte extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "No hay datos en la tabla para graficar.");
             return;
         }
-        // pedimos a la clase fabrique el panel grafico
-        ChartPanel panelGrafico = controlGraficos.obtenerGraficoBarras(modelo);
+        
+        //Conseguimos la lista de datos
+        ArrayList<ReporteFila> datosParaGrafico;
+        if (jdc_De.getDate() != null && jdc_Hasta.getDate() != null) {
+            datosParaGrafico = logica.obtenerHistorialFiltrado(jdc_De.getDate(), jdc_Hasta.getDate());
+        } else {
+            datosParaGrafico = logica.obtenerHistorialGeneral();
+        }
+        
+        //Le pasamos la lista de objetos al graficador
+        ChartPanel panelGrafico = controlGraficos.obtenerGraficoBarras(datosParaGrafico);
         
         // Ventana Flotante
         JFrame ventana = new JFrame("Estadísticas - Gráfico de Barras");

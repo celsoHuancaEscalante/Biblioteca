@@ -1,12 +1,15 @@
 
 package LogicaReporteIngresos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
@@ -17,30 +20,40 @@ public class ReporteGrafico {
     public ReporteGrafico() {
     }
     
-    public ChartPanel obtenerGraficoBarras (DefaultTableModel modeloTabla) {
+    public ChartPanel obtenerGraficoBarras (ArrayList<ReporteFila>listaFilas) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        HashMap <String, Double> ingresosPorLibro = new HashMap<>();
+        HashMap <String, Integer> conteoGeneros = new HashMap<>();
         
-        int filas = modeloTabla.getRowCount();
-        for (int i = 0; i < filas; i++) {
-            String libro = (String) modeloTabla.getValueAt(i, 5); //Columna libro
-            double totalFila = (double) modeloTabla.getValueAt(i, 8); //Columna Total
-            ingresosPorLibro.put(libro, ingresosPorLibro.getOrDefault(libro, 0.0) + totalFila);
+        for (ReporteFila r : listaFilas) {
+            if (r.getDetalle() != null &&
+                    r.getDetalle().getEjemplar() !=null &&
+                    r.getDetalle().getEjemplar().getLibro() != null &&
+                    r.getDetalle().getEjemplar().getLibro().getGenero() !=null) {
+                
+                String nombreGenero = r.getDetalle().getEjemplar().getLibro().getGenero().getNombre();
+                
+                if (nombreGenero != null && !nombreGenero.isEmpty()) {
+                    conteoGeneros.put(nombreGenero, conteoGeneros.getOrDefault(nombreGenero, 0) + 1);
+                }
+            }
         }
         
-        for (Map.Entry<String, Double> entry : ingresosPorLibro.entrySet()) {
-            dataset.setValue(entry.getValue(), "Ingresos (S/)", entry.getKey());
+        for (Map.Entry<String,Integer> entry: conteoGeneros.entrySet()) {
+            dataset.setValue(entry.getValue(), "Cantidad de Prestamos", entry.getKey());
         }
-        
         JFreeChart chart = ChartFactory.createBarChart3D(
-                "Ingresos Totales por Libro", 
-                "Libros", 
-                "Monto Acumulado (S/)", 
+                "Generos Literarios", 
+                "Generos", 
+                "Canitdad de Prestamos", 
                 dataset, 
                 PlotOrientation.VERTICAL, 
-                true, 
+                false, 
                 true, 
                 false);
+        CategoryPlot plot = chart.getCategoryPlot();
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        
         return new ChartPanel(chart);
     }
     
