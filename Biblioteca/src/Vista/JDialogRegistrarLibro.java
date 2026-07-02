@@ -5,326 +5,163 @@
 package Vista;
 
 import ClaseBase.*;
-import Datos.*;
-import java.util.List;
-import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
+import Logica.LogicaRegistrar;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Raul
  */
-public class JDialog extends javax.swing.JDialog {
+public class JDialogRegistrarLibro extends javax.swing.JDialog {
     
-    private LibroAD libroAD = new LibroAD();
-    private AutorAD autorAD = new AutorAD();
-    private EditorialAD editorialAD = new EditorialAD();
-    private GeneroAD generoAD = new GeneroAD();
-    private EjemplarAD ejemplarAD = new EjemplarAD();
-
-// Referencia al JFrame
-private Jfrm jfrm;
-
-// Modelo de tabla
-private DefaultTableModel modeloTabla;
-
-// Variable de control
-private Libro libroActual = null;
+    private LogicaRegistrar logica = new LogicaRegistrar();
+    private DefaultTableModel modeloTabla;
+    private JfrmBuscarLibro jfrm;
+    private Libro libroActual = null;
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JDialog.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JDialogRegistrarLibro.class.getName());
 
     /**
      * Creates new form JDialog
      */
-    public JDialog(Jfrm jfrm) {
+    public JDialogRegistrarLibro(JfrmBuscarLibro jfrm) {
         super(jfrm, "Registro de Libros", true);
-    this.jfrm = jfrm;
+        this.jfrm = jfrm;
     
-    initComponents();
+        initComponents();
+        inicializarTabla();
+        cargarTabla();
     
-    // Inicializar tabla
-    inicializarTabla();
-    
-    // Cargar tabla
-    cargarTabla();
-    
-    // Agregar doble clic en tabla para eliminar
-    tblLibros.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            if (evt.getClickCount() == 2) {
-                eliminarLibroDesdeTabla();
+        // Agregar doble clic en tabla para eliminar
+        tblLibros.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    eliminarLibroDesdeTabla();
+                }
             }
+        });
+    
+        // Configurar botones
+        btnGuardarLibro.addActionListener(e -> guardarLibro());
+        btnRegresar.addActionListener(e -> dispose());
+        btnLimpiar.addActionListener(e -> limpiarFormulario());
+    
+        setLocationRelativeTo(jfrm);
+        setVisible(true);
         }
-    });
-    
-    // Configurar botones
-    btnGuardarLibro.addActionListener(e -> guardarLibro());
-    btnRegresar.addActionListener(e -> dispose());
-    
-    setLocationRelativeTo(jfrm);
-    setVisible(true);
-    }
 
     private void inicializarTabla() {
-    modeloTabla = new DefaultTableModel(
+        modeloTabla = new DefaultTableModel(
         new String[]{"Título", "Autor", "Editorial", "Año", "Género", "Stock"},
         0
-    ) {
+        ) {
         @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    tblLibros.setModel(modeloTabla);
-    tblLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-}
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblLibros.setModel(modeloTabla);
+        tblLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
     
     private void cargarTabla() {
-    modeloTabla.setRowCount(0);
-    List<Libro> libros = libroAD.obtenerTodos();
-    
-    for (Libro libro : libros) {
-        modeloTabla.addRow(new Object[]{
-            libro.getTitulo(),
-            libro.getAutor().toString(),
-            libro.getEditorial().getNombre(),
-            libro.getAnioPublicacion(),
-            libro.getGenero().getNombre(),
-            libro.getStock()
-        });
+        modeloTabla.setRowCount(0);
+        // LLAMAR A LÓGICA
+        for (Object[] fila : logica.obtenerLibrosParaTabla()) {
+            modeloTabla.addRow(fila);
+        }
     }
-}
     
     private void modificarDesdeTabla() {
-    int filaSeleccionada = tblLibros.getSelectedRow();
-    
-    if (filaSeleccionada == -1) {
-        JOptionPane.showMessageDialog(this, "Selecciona una fila para modificar");
-        return;
-    }
-    
-    String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
-    
-    List<Libro> libros = libroAD.obtenerTodos();
-    for (Libro libro : libros) {
-        if (libro.getTitulo().equals(titulo)) {
-            libroActual = libro;
+        int filaSeleccionada = tblLibros.getSelectedRow();
+        
+        if (filaSeleccionada == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Selecciona una fila para modificar");
+            return;
+        }
+        
+        String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
+        
+        // LLAMAR A LÓGICA
+        libroActual = logica.buscarLibroPorTitulo(titulo);
+        
+        if (libroActual != null) {
+            // Autocompletar campos
+            txtTitulo.setText(libroActual.getTitulo());
+            txtAutor.setText(libroActual.getAutor().toString());
+            txtEditorial.setText(libroActual.getEditorial().getNombre());
+            txtAñoPublicación.setText(String.valueOf(libroActual.getAnioPublicacion()));
+            txtGenero.setText(libroActual.getGenero().getNombre());
+            txtStock.setText(String.valueOf(libroActual.getStock()));
             
-            // AUTOCOMPLETADO
-            txtTitulo.setText(libro.getTitulo());
-            txtAutor.setText(libro.getAutor().toString());
-            txtEditorial.setText(libro.getEditorial().getNombre());
-            txtAñoPublicación.setText(String.valueOf(libro.getAnioPublicacion()));
-            txtGenero.setText(libro.getGenero().getNombre());
-            txtStock.setText(String.valueOf(libro.getStock()));
-            
-            JOptionPane.showMessageDialog(this, "Campos completados. Modifica y presiona Guardar.");
-            break;
+            javax.swing.JOptionPane.showMessageDialog(this, "Campos completados. Modifica y presiona Guardar.");
         }
     }
-}
     
     private void guardarLibro() {
-    if (txtTitulo.getText().isEmpty() || txtStock.getText().isEmpty()) {
-        //JOptionPane.showMessageDialog(this, "Completa los campos obligatorios");
-        return;
+        if (txtTitulo.getText().isEmpty() || txtStock.getText().isEmpty()) {
+            return;
+        }
+        
+        try {
+            String titulo = txtTitulo.getText();
+            String nombreAutor = txtAutor.getText();
+            String nombreEditorial = txtEditorial.getText();
+            int ano = Integer.parseInt(txtAñoPublicación.getText());
+            String nombreGenero = txtGenero.getText();
+            int stock = Integer.parseInt(txtStock.getText());
+            
+            // LLAMAR A LÓGICA
+            String resultado = logica.guardarLibro(titulo, nombreAutor, nombreEditorial, 
+                                                   ano, nombreGenero, stock, libroActual);
+            
+            javax.swing.JOptionPane.showMessageDialog(this, resultado);
+            
+            limpiarFormulario();
+            cargarTabla();
+            jfrm.actualizarTablaDesdeDialog();
+            
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Verifica que Año y Stock sean números");
+        }
     }
-    
-    try {
-        String titulo = txtTitulo.getText();
-        String nombreAutor = txtAutor.getText();
-        String nombreEditorial = txtEditorial.getText();
-        int ano = Integer.parseInt(txtAñoPublicación.getText());
-        String nombreGenero = txtGenero.getText();
-        int stock = Integer.parseInt(txtStock.getText());
-        
-        // ============================================
-        // VERIFICAR/CREAR AUTOR
-        // ============================================
-        Autor autor = null;
-        List<Autor> autoresEnBD = autorAD.obtenerTodos();
-        
-        for (Autor a : autoresEnBD) {
-            if (a.toString().equalsIgnoreCase(nombreAutor)) {
-                autor = a;
-                break;
-            }
-        }
-        
-        // Si no existe, crear uno nuevo
-        if (autor == null) {
-            // Aquí asumo que el usuario escribe: "Primer Segundo Primer Segundo"
-            // Para simplificar, creo un autor con todos los datos en primerNombre
-            String[] partes = nombreAutor.trim().split(" ");
-    
-            String primerNombre = partes.length > 0 ? partes[0] : "";
-            String segundoNombre = partes.length > 1 ? partes[1] : "";
-            String primerApellido = partes.length > 2 ? partes[2] : "";
-            String segundoApellido = partes.length > 3 ? partes[3] : "";
-            
-            autor = new Autor(0, primerNombre, segundoNombre, primerApellido, segundoApellido);
-            autorAD.insertar(autor);
-            
-            // Obtener el ID asignado
-            autoresEnBD = autorAD.obtenerTodos();
-            for (Autor a : autoresEnBD) {
-                if (a.mostrarDatos().equals(nombreAutor)) {
-                    autor = a;
-                    break;
-                }
-            }
-        }
-        
-        // ============================================
-        // VERIFICAR/CREAR EDITORIAL
-        // ============================================
-        Editorial editorial = null;
-        List<Editorial> editorialesEnBD = editorialAD.obtenerTodos();
-        
-        for (Editorial e : editorialesEnBD) {
-            if (e.getNombre().equalsIgnoreCase(nombreEditorial)) {
-                editorial = e;
-                break;
-            }
-        }
-        
-        // Si no existe, crear una nueva
-        if (editorial == null) {
-            editorial = new Editorial(0, nombreEditorial);
-            editorialAD.insertar(editorial);
-            
-            // Obtener el ID asignado
-            editorialesEnBD = editorialAD.obtenerTodos();
-            for (Editorial e : editorialesEnBD) {
-                if (e.getNombre().equals(nombreEditorial)) {
-                    editorial = e;
-                    break;
-                }
-            }
-        }
-        
-        // ============================================
-        // VERIFICAR/CREAR GÉNERO
-        // ============================================
-        Genero genero = null;
-        List<Genero> generosEnBD = generoAD.obtenerTodos();
-        
-        for (Genero g : generosEnBD) {
-            if (g.getNombre().equalsIgnoreCase(nombreGenero)) {
-                genero = g;
-                break;
-            }
-        }
-        
-        // Si no existe, crear uno nuevo
-        if (genero == null) {
-            genero = new Genero(0, nombreGenero);
-            generoAD.insertar(genero);
-            
-            // Obtener el ID asignado
-            generosEnBD = generoAD.obtenerTodos();
-            for (Genero g : generosEnBD) {
-                if (g.getNombre().equals(nombreGenero)) {
-                    genero = g;
-                    break;
-                }
-            }
-        }
-        
-        // ============================================
-        // INSERTAR O ACTUALIZAR LIBRO
-        // ============================================
-        if (libroActual != null) {
-            // MODIFICAR
-            libroActual.setTitulo(titulo);
-            libroActual.setAutor(autor);
-            libroActual.setEditorial(editorial);
-            libroActual.setAnioPublicacion(ano);
-            libroActual.setGenero(genero);
-            libroActual.setStock(stock);
-            
-            boolean actualizado = libroAD.actualizar(libroActual);
-            
-            if (actualizado) {
-                JOptionPane.showMessageDialog(this, "Libro actualizado correctamente");
-                limpiarFormulario();
-                libroActual = null;
-                cargarTabla();
-                jfrm.actualizarTablaDesdeDialog();
-            }
-        } else {
-            // INSERTAR NUEVO
-            Libro nuevoLibro = new Libro(
-                0, genero, autor, editorial,
-                titulo, stock, ano
-            );
-            
-            int idLibroInsertado = libroAD.insertar(nuevoLibro);
-            
-            if (idLibroInsertado > 0) {
-                boolean ejemplaresCreados = ejemplarAD.insertarEjemplares(idLibroInsertado, stock);
-                
-                if (ejemplaresCreados) {
-                    JOptionPane.showMessageDialog(this, "Libro registrado con " + stock + " ejemplares");
-                    limpiarFormulario();
-                    cargarTabla();
-                    jfrm.actualizarTablaDesdeDialog();
-                }
-            }
-        }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Verifica que Año y Stock sean números");
-    }
-}
     
     private void eliminarLibroDesdeTabla() {
-    int filaSeleccionada = tblLibros.getSelectedRow();
-    
-    if (filaSeleccionada == -1) {
-        return;
-    }
-    
-    String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
-    
-    int confirmacion = JOptionPane.showConfirmDialog(
-        this,
-        "¿Eliminar el libro: " + titulo + "?",
-        "Confirmar eliminación",
-        JOptionPane.YES_NO_OPTION
-    );
-    
-    if (confirmacion == JOptionPane.YES_OPTION) {
-        List<Libro> libros = libroAD.obtenerTodos();
+        int filaSeleccionada = tblLibros.getSelectedRow();
         
-        for (Libro libro : libros) {
-            if (libro.getTitulo().equals(titulo)) {
-                // Eliminar ejemplares primero
-                ejemplarAD.eliminarPorLibro(libro.getIdLibro());
-                
-                // Eliminar libro
-                boolean eliminado = libroAD.eliminar(libro.getIdLibro());
-                
-                if (eliminado) {
-                    JOptionPane.showMessageDialog(this, "Libro eliminado correctamente");
-                    cargarTabla();
-                    jfrm.actualizarTablaDesdeDialog();
-                }
-                break;
-            }
+        if (filaSeleccionada == -1) {
+            return;
+        }
+        
+        String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
+        
+        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "¿Eliminar el libro: " + titulo + "?",
+            "Confirmar eliminación",
+            javax.swing.JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
+            // LLAMAR A LÓGICA
+            String resultado = logica.eliminarLibro(titulo);
+            
+            javax.swing.JOptionPane.showMessageDialog(this, resultado);
+            cargarTabla();
+            jfrm.actualizarTablaDesdeDialog();
         }
     }
-}
     
     private void limpiarFormulario() {
-    txtTitulo.setText("");
-    txtAutor.setText("");
-    txtEditorial.setText("");
-    txtAñoPublicación.setText("");
-    txtGenero.setText("");
-    txtStock.setText("");
-    libroActual = null;
-}
+        txtTitulo.setText("");
+        txtAutor.setText("");
+        txtEditorial.setText("");
+        txtAñoPublicación.setText("");
+        txtGenero.setText("");
+        txtStock.setText("");
+        libroActual = null;
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.

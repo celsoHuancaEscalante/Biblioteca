@@ -4,38 +4,28 @@
  */
 package Vista;
 
-import Datos.*;
 import ClaseBase.*;
+import Logica.LogicaBuscar;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
-public class Jfrm extends javax.swing.JFrame {
+public class JfrmBuscarLibro extends javax.swing.JFrame {
     
-    private LibroAD libroAD = new LibroAD();
-    private GeneroAD generoAD = new GeneroAD();
-    private AutorAD autorAD = new AutorAD();
-    private EditorialAD editorialAD = new EditorialAD();
-    private EjemplarAD ejemplarAD = new EjemplarAD();
+    private LogicaBuscar logica = new LogicaBuscar();
     private DefaultTableModel modeloTabla;
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Jfrm.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(JfrmBuscarLibro.class.getName());
 
     /**
      * Creates new form Jfrm
      */
-    public Jfrm() {
+    public JfrmBuscarLibro() {
         
         initComponents();
-    
-    // Inicializar tabla
-    inicializarTabla();
-    
-    // Cargar ComboBoxes
-    cargarComboBoxes();
-    
-    // Cargar tabla
-    cargarTabla();
+        inicializarTabla();
+        cargarComboBoxes();
+        cargarTabla();
     
     // Agregar KeyListener al txtBuscarLibro (autocompletado)
     txtBuscarPorTitulo.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -56,97 +46,62 @@ public class Jfrm extends javax.swing.JFrame {
             return false;
         }
     };
-    tblLibros.setModel(modeloTabla);
-    tblLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-}
+        tblLibros.setModel(modeloTabla);
+        tblLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
 
     private void cargarComboBoxes() {
-    // Limpiar ComboBoxes
-    cboAutores.removeAllItems();
-    cboGenero.removeAllItems();
-    
-    // Agregar opción "Todos"
-    cboAutores.addItem("Todos");
-    cboGenero.addItem("Todos");
-    
-    // Cargar Autores
-    for (Autor a : autorAD.obtenerTodos()) {
-        cboAutores.addItem(a.toString());
+        cboAutores.removeAllItems();
+        cboGenero.removeAllItems();
+        
+        // LLAMAR A LÓGICA
+        for (String genero : logica.obtenerGeneros()) {
+            cboGenero.addItem(genero);
+        }
+        
+        for (String autor : logica.obtenerAutores()) {
+            cboAutores.addItem(autor);
+        }
     }
-    
-    // Cargar Géneros
-    for (Genero g : generoAD.obtenerTodos()) {
-        cboGenero.addItem(g.getNombre());
-    }
-}
     
     private void cargarTabla() {
-    modeloTabla.setRowCount(0);
-    List<Libro> libros = libroAD.obtenerTodos();
-    
-    for (Libro libro : libros) {
-        int disponibles = ejemplarAD.contarDisponibles(libro.getIdLibro());
-        int noDisponibles = libro.getStock() - disponibles;
+        modeloTabla.setRowCount(0);
         
-        String estado = disponibles > 0 ? "Disponible" : "No Disponible";
+        // LLAMAR A LÓGICA
+        java.util.List<Object[]> filas = logica.obtenerLibrosParaTabla();
+        for (Object[] fila : filas) {
+            modeloTabla.addRow(fila);
+        }
         
-        modeloTabla.addRow(new Object[]{
-            libro.getIdLibro(),
-            libro.getTitulo(),
-            libro.getAutor().toString(),
-            libro.getEditorial().getNombre(),
-            libro.getGenero().getNombre(),
-            libro.getStock(),
-            estado
-        });
+        lblTotalLibros.setText("" + logica.calcularTotalEjemplares(filas));
     }
-    
-    int totalEjemplares = calcularTotalEjemplares(libros);
-    // Actualizar label de total
-    lblTotalLibros.setText("" + totalEjemplares);
-}
-    
-    private void buscarEnTiempo() {
-    String titulo = txtBuscarPorTitulo.getText();
-    
-    if (titulo.isEmpty()) {
-        cargarTabla();
-        return;
-    }
-    
-    modeloTabla.setRowCount(0);
-    List<Libro> libros = libroAD.buscarPorTitulo(titulo);
-    
-    for (Libro libro : libros) {
-        int disponibles = ejemplarAD.contarDisponibles(libro.getIdLibro());
-        String estado = disponibles > 0 ? "Disponible" : "No Disponible";
-        
-        modeloTabla.addRow(new Object[]{
-            libro.getIdLibro(),
-            libro.getTitulo(),
-            libro.getAutor().toString(),
-            libro.getEditorial().getNombre(),
-            libro.getGenero().getNombre(),
-            libro.getStock(),
-            estado
-        });
-    }
-    
-    lblTotalLibros.setText("" + libros.size());
-}
-    
-    public void actualizarTablaDesdeDialog() {
-    cargarComboBoxes();
-    cargarTabla();
-}
     
     private int calcularTotalEjemplares(List<Libro> libros) {
-    int total = 0;
-    for (Libro libro : libros) {
+        int total = 0;
+        for (Libro libro : libros) {
         total += libro.getStock();
+        }
+        return total;
     }
-    return total;
-}
+    
+    private void buscarEnTiempo() {
+        String titulo = txtBuscarPorTitulo.getText();
+        modeloTabla.setRowCount(0);
+        
+        // LLAMAR A LÓGICA
+        java.util.List<Object[]> filas = logica.buscarPorTitulo(titulo);
+        for (Object[] fila : filas) {
+            modeloTabla.addRow(fila);
+        }
+        
+        lblTotalLibros.setText("" + filas.size());
+    }
+    
+    public void actualizarTablaDesdeDialog() {
+        cargarComboBoxes();
+        cargarTabla();
+    }
+    
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -323,57 +278,24 @@ public class Jfrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarLibroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarLibroActionPerformed
-        new JDialog(this);
+        new JDialogRegistrarLibro(this);
     }//GEN-LAST:event_btnAgregarLibroActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         
-        String generoSeleccionado = (String) cboGenero.getSelectedItem();
-        String autorSeleccionado = (String) cboAutores.getSelectedItem();
-    
-        Genero genero = null;
-        Autor autor = null;
-    
-    // Buscar Género
-        if (!generoSeleccionado.equals("Todos")) {
-            for (Genero g : generoAD.obtenerTodos()) {
-                if (g.getNombre().equals(generoSeleccionado)) {
-                    genero = g;
-                    break;
-                }
-            }
-        }
-    
-    // Buscar Autor
-        if (!autorSeleccionado.equals("Todos")) {
-            for (Autor a : autorAD.obtenerTodos()) {
-                if (a.toString().equals(autorSeleccionado)) {
-                    autor = a;
-                    break;
-                }
-            }
-        }
-    
-    // Filtrar libros
-        modeloTabla.setRowCount(0);
-        List<Libro> libros = libroAD.filtrar(genero, autor);
-    
-        for (Libro libro : libros) {
-            int disponibles = ejemplarAD.contarDisponibles(libro.getIdLibro());
-            String estado = disponibles > 0 ? "Disponible" : "No Disponible";
+        String genero = (String) cboGenero.getSelectedItem();
+        String autor = (String) cboAutores.getSelectedItem();
         
-            modeloTabla.addRow(new Object[]{
-                libro.getIdLibro(),
-                libro.getTitulo(),
-                libro.getAutor().toString(),
-                libro.getEditorial().getNombre(),
-                libro.getGenero().getNombre(),
-                libro.getStock(),
-                estado
-            });
+        modeloTabla.setRowCount(0);
+        
+        // LLAMAR A LÓGICA
+        //java.util.
+        List<Object[]> filas = logica.filtrarLibros(genero, autor);
+        for (Object[] fila : filas) {
+            modeloTabla.addRow(fila);
         }
-    
-        lblTotalLibros.setText("" + libros.size());
+        
+        lblTotalLibros.setText("" + filas.size());
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
@@ -410,7 +332,7 @@ public class Jfrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Jfrm().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new JfrmBuscarLibro().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
