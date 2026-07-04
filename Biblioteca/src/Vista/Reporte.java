@@ -10,6 +10,7 @@ import LogicaReporteIngresos.ReporteLogica;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartPanel;
 
@@ -220,13 +221,13 @@ public class Reporte extends javax.swing.JPanel {
 
         jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 170, 210));
 
-        btn_Graficar.setText("Graficar");
+        btn_Graficar.setText("Grafico de Barras");
         btn_Graficar.addActionListener(this::btn_GraficarActionPerformed);
-        jPanel2.add(btn_Graficar, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 10, -1, -1));
+        jPanel2.add(btn_Graficar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 10, -1, -1));
 
-        btn_Graficar2.setText("Graficar 2");
+        btn_Graficar2.setText("Ganancias");
         btn_Graficar2.addActionListener(this::btn_Graficar2ActionPerformed);
-        jPanel2.add(btn_Graficar2, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 10, -1, -1));
+        jPanel2.add(btn_Graficar2, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 10, -1, -1));
 
         add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1130, 590));
     }// </editor-fold>//GEN-END:initComponents
@@ -323,19 +324,14 @@ public class Reporte extends javax.swing.JPanel {
 
     private void btn_Graficar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Graficar2ActionPerformed
         if (tbl_Reporte.getRowCount() == 0) {
-           JOptionPane.showMessageDialog(this, "No hay datos en la tabla para graficar.");
-           return;
+            JOptionPane.showMessageDialog(this, "No hay datos en la tabla para graficar");
+            return;
         }
+        JFrame frmPrincipal = (JFrame) SwingUtilities.getWindowAncestor(this);
+        dlg_GraficoLineas ventanaGrafico = new dlg_GraficoLineas(frmPrincipal, true);
         
-        // pedimos a la clase fabrique el panel grafico
-        ChartPanel panelGrafico = controlGraficos.obtenerGraficoPie(modelo);
-        
-        // Ventana Flotante
-        JFrame ventana = new JFrame("Estadísticas - Gráfico de Pastel");
-        ventana.setContentPane(panelGrafico);
-        ventana.setSize(600, 500);
-        ventana.setLocationRelativeTo(this);
-        ventana.setVisible(true);
+        ventanaGrafico.setLocationRelativeTo(this);
+        ventanaGrafico.setVisible(true);
     }//GEN-LAST:event_btn_Graficar2ActionPerformed
 
     private void btn_BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BuscarActionPerformed

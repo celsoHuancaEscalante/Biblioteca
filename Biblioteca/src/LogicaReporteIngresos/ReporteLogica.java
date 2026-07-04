@@ -200,4 +200,32 @@ public class ReporteLogica {
         return lista;
     }
     
+    public ArrayList<Integer> obtenerAniosConGanacias () {
+        ArrayList<Integer> anios = new ArrayList<>();
+        String sql = "SELECT DISTINCT YEAR(p.fecha_prestamo) AS anio "
+                   + "FROM prestamos p "
+                   + "WHERE p.fecha_devolucion IS NOT NULL "
+                   + "ORDER BY anio DESC";
+        try {            
+            Connection cn = ConnectMySQL.conn();
+            if (cn == null) {
+            JOptionPane.showMessageDialog(null, "Error");
+            return anios;
+            }
+            PreparedStatement pst = cn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {                
+                anios.add(rs.getInt("anio"));
+            }
+            rs.close();
+            pst.close();
+            cn.close();
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al obtener años de ganacia: " + e.getMessage());
+        }
+        return anios;
+    }
+    
 }

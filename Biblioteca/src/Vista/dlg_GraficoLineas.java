@@ -4,11 +4,23 @@
  */
 package Vista;
 
+import LogicaReporteIngresos.ReporteFila;
+import LogicaReporteIngresos.ReporteGrafico;
+import LogicaReporteIngresos.ReporteLogica;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import org.jfree.chart.ChartPanel;
+
 /**
  *
  * @author USER
  */
 public class dlg_GraficoLineas extends javax.swing.JDialog {
+    ReporteLogica logica = new ReporteLogica();
+    ReporteGrafico controlGraficos = new ReporteGrafico();
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(dlg_GraficoLineas.class.getName());
 
@@ -18,7 +30,10 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
     public dlg_GraficoLineas(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        cargarComboMeses();
+        cargarComboAnios();
         setLocationRelativeTo(null);
+        generarGrafico();
     }
 
     /**
@@ -29,15 +44,15 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
     private void initComponents() {
 
         JPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        JResultados = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cbx_Mes = new javax.swing.JComboBox<>();
+        cbx_Anio = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btn_refresh = new javax.swing.JButton();
+        btn_Graficar = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -46,28 +61,25 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
 
         JPanel.setBackground(new java.awt.Color(255, 255, 255));
 
-        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
+        JResultados.setBackground(new java.awt.Color(153, 153, 153));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 468, Short.MAX_VALUE)
+        javax.swing.GroupLayout JResultadosLayout = new javax.swing.GroupLayout(JResultados);
+        JResultados.setLayout(JResultadosLayout);
+        JResultadosLayout.setHorizontalGroup(
+            JResultadosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 656, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 293, Short.MAX_VALUE)
+        JResultadosLayout.setVerticalGroup(
+            JResultadosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 376, Short.MAX_VALUE)
         );
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Filtrar por:");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -75,11 +87,13 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Año");
+        jLabel3.setText("Año:");
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/Refresh (1).png"))); // NOI18N
+        btn_refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/Refresh (1).png"))); // NOI18N
+        btn_refresh.addActionListener(this::btn_refreshActionPerformed);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/grafico.png"))); // NOI18N
+        btn_Graficar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/grafico.png"))); // NOI18N
+        btn_Graficar.addActionListener(this::btn_GraficarActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -95,12 +109,12 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBox1, 0, 90, Short.MAX_VALUE)
-                            .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(cbx_Anio, 0, 119, Short.MAX_VALUE)
+                            .addComponent(cbx_Mes, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_Graficar, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)))
+                        .addComponent(btn_refresh, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -109,17 +123,17 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbx_Mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbx_Anio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(23, 23, 23))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 27, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btn_Graficar, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+                    .addComponent(btn_refresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(32, 32, 32))
         );
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -132,12 +146,12 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
         JPanelLayout.setHorizontalGroup(
             JPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(JPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(16, 16, 16)
+                .addComponent(JResultados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
-            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 890, Short.MAX_VALUE)
         );
         JPanelLayout.setVerticalGroup(
             JPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,19 +159,29 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
                 .addComponent(jLabel4)
                 .addGroup(JPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(JPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37))
+                        .addGap(10, 10, 10)
+                        .addComponent(JResultados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(JPanelLayout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(76, 76, 76)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
-        getContentPane().add(JPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 390));
+        getContentPane().add(JPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 890, 470));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_GraficarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_GraficarActionPerformed
+        generarGrafico();
+    }//GEN-LAST:event_btn_GraficarActionPerformed
+
+    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
+        cbx_Mes.setSelectedIndex(0);
+        cbx_Anio.setSelectedIndex(0);
+        
+        generarGrafico();
+    }//GEN-LAST:event_btn_refreshActionPerformed
 
     /**
      * @param args the command line arguments
@@ -195,18 +219,87 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
             }
         });
     }
+    
+    public void cargarComboMeses () {
+        cbx_Mes.removeAllItems();
+        cbx_Mes.addItem("Todos");
+        String []meses = {
+            "Enero", 
+            "Febrero", 
+            "Marzo", 
+            "Abril", 
+            "Mayo", 
+            "Junio",             
+            "Julio", 
+            "Agosto", 
+            "Septiembre",
+            "Octubre", 
+            "Noviembre", 
+            "Diciembre"};
+        for (String mes : meses) {
+            cbx_Mes.addItem(mes);
+        }
+    }
+    
+    public void cargarComboAnios () {
+        try {
+         cbx_Anio.removeAllItems();
+         if (logica == null) {
+             JOptionPane.showMessageDialog(this, "Error");
+             cbx_Anio.addItem(String.valueOf(LocalDate.now().getYear()));
+             return;
+        }
+         
+        ArrayList<Integer> listaAnios = logica.obtenerAniosConGanacias();
+        if (listaAnios.isEmpty()) {
+            cbx_Anio.addItem(String.valueOf(LocalDate.now().getYear()));
+        } else {
+            for (Integer anio: listaAnios) {
+                cbx_Anio.addItem(String.valueOf(anio));
+            }
+        }
+        }catch (Exception e ) {
+            JOptionPane.showMessageDialog(this, "Error al cargar años: " + e.getMessage());
+            cbx_Anio.addItem(String.valueOf(LocalDate.now().getYear()));
+        }
+    }
+    
+    private void generarGrafico () {
+        //Validacion que tengamos el año seleccionado 
+        if (cbx_Anio.getSelectedItem() == null || cbx_Mes.getSelectedItem() == null) 
+        return;
+        
+        String mesSel = cbx_Mes.getSelectedItem().toString();
+        String anioSel = cbx_Anio.getSelectedItem().toString();
+        
+        //Traer todos los objetos de la base de datos para procesarlos en el filtro
+        ArrayList<ReporteFila> todasLasFilas = logica.obtenerHistorialGeneral();
+        
+        //Soliccitar el grafico de lineas
+        ChartPanel panelGrafico = controlGraficos.obtenerGraficoLineas(todasLasFilas, mesSel, anioSel);
+        
+        panelGrafico.setPreferredSize(new Dimension(JResultados.getWidth(), JResultados.getHeight()));
+        
+        //Inyectar el grafico dentro del jpanel
+        JResultados.setLayout(new BorderLayout());
+        JResultados.removeAll();
+        JResultados.add(panelGrafico,BorderLayout.CENTER);
+        JResultados.validate();
+        JResultados.repaint();
+        
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel JPanel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JPanel JResultados;
+    private javax.swing.JButton btn_Graficar;
+    private javax.swing.JButton btn_refresh;
+    private javax.swing.JComboBox<String> cbx_Anio;
+    private javax.swing.JComboBox<String> cbx_Mes;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }

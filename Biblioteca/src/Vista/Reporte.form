@@ -384,27 +384,27 @@
         </Container>
         <Component class="javax.swing.JButton" name="btn_Graficar">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Graficar"/>
+            <Property name="text" type="java.lang.String" value="Grafico de Barras"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_GraficarActionPerformed"/>
           </Events>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="800" y="10" width="-1" height="-1"/>
+              <AbsoluteConstraints x="740" y="10" width="-1" height="-1"/>
             </Constraint>
           </Constraints>
         </Component>
         <Component class="javax.swing.JButton" name="btn_Graficar2">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Graficar 2"/>
+            <Property name="text" type="java.lang.String" value="Ganancias"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_Graficar2ActionPerformed"/>
           </Events>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="900" y="10" width="-1" height="-1"/>
+              <AbsoluteConstraints x="930" y="10" width="-1" height="-1"/>
             </Constraint>
           </Constraints>
         </Component>
