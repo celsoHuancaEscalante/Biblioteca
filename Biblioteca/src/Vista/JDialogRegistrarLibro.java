@@ -31,6 +31,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
     
         initComponents();
         inicializarTabla();
+        cargarGenerosEnComboBox();
         cargarTabla();
     
         // Agregar doble clic en tabla para eliminar
@@ -50,7 +51,15 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         setLocationRelativeTo(jfrm);
         setVisible(true);
         }
-
+    
+    private void cargarGenerosEnComboBox() {
+        
+        cboGenero.removeAllItems();
+        for (String genero : logica.obtenerGenerosParaComboBox()) {
+            cboGenero.addItem(genero);
+        }
+    }
+    
     private void inicializarTabla() {
         modeloTabla = new DefaultTableModel(
         new String[]{"Título", "Autor", "Editorial", "Año", "Género", "Stock"},
@@ -92,7 +101,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
             txtAutor.setText(libroActual.getAutor().toString());
             txtEditorial.setText(libroActual.getEditorial().getNombre());
             txtAñoPublicación.setText(String.valueOf(libroActual.getAnioPublicacion()));
-            txtGenero.setText(libroActual.getGenero().getNombre());
+            cboGenero.setSelectedItem(libroActual.getGenero().getNombre());
             txtStock.setText(String.valueOf(libroActual.getStock()));
             
             javax.swing.JOptionPane.showMessageDialog(this, "Campos completados. Modifica y presiona Guardar.");
@@ -109,7 +118,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
             String nombreAutor = txtAutor.getText();
             String nombreEditorial = txtEditorial.getText();
             int ano = Integer.parseInt(txtAñoPublicación.getText());
-            String nombreGenero = txtGenero.getText();
+            String nombreGenero = (String) cboGenero.getSelectedItem();
             int stock = Integer.parseInt(txtStock.getText());
             
             // LLAMAR A LÓGICA
@@ -158,7 +167,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         txtAutor.setText("");
         txtEditorial.setText("");
         txtAñoPublicación.setText("");
-        txtGenero.setText("");
+        cboGenero.setSelectedIndex(0);
         txtStock.setText("");
         libroActual = null;
     }
@@ -193,8 +202,8 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         txtAutor = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         btnModificar = new javax.swing.JButton();
-        txtGenero = new javax.swing.JTextField();
         btnLimpiar = new javax.swing.JButton();
+        cboGenero = new javax.swing.JComboBox<>();
 
         jLabel7.setText("jLabel1");
 
@@ -273,13 +282,13 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cboGenero, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(txtTitulo)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(txtEditorial, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(65, 65, 65)
-                                        .addComponent(txtAñoPublicación))
-                                    .addComponent(txtAutor)
-                                    .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(txtAñoPublicación, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE))
+                                    .addComponent(txtAutor)))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(99, 99, 99)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -329,8 +338,8 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
                 .addGap(27, 27, 27)
                 .addComponent(jLabel9)
                 .addGap(2, 2, 2)
-                .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cboGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel8)
@@ -396,6 +405,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnRegresar;
+    private javax.swing.JComboBox<String> cboGenero;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -412,7 +422,6 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
     private javax.swing.JTextField txtAutor;
     private javax.swing.JTextField txtAñoPublicación;
     private javax.swing.JTextField txtEditorial;
-    private javax.swing.JTextField txtGenero;
     private javax.swing.JTextField txtStock;
     private javax.swing.JTextField txtTitulo;
     // End of variables declaration//GEN-END:variables

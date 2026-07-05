@@ -147,18 +147,7 @@
         <Component class="javax.swing.JComboBox" name="cboGenero">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="10">
-                <StringItem index="0" value="Aventura"/>
-                <StringItem index="1" value="Ciencia Ficci&#xf3;n"/>
-                <StringItem index="2" value="Dram&#xe1;tico"/>
-                <StringItem index="3" value="Fantas&#xed;a"/>
-                <StringItem index="4" value="L&#xed;rico"/>
-                <StringItem index="5" value="Misterio"/>
-                <StringItem index="6" value="Narrativo"/>
-                <StringItem index="7" value="Poes&#xed;a "/>
-                <StringItem index="8" value="Rom&#xe1;ntico"/>
-                <StringItem index="9" value="Terror"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <Events>
@@ -171,9 +160,7 @@
         <Component class="javax.swing.JComboBox" name="cboAutores">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="1">
-                <StringItem index="0" value="Autores"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <AuxValues>

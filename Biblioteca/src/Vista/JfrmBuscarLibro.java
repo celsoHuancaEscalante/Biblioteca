@@ -127,10 +127,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
 
         jLabel1.setText("Buscar:");
 
-        cboGenero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aventura", "Ciencia Ficción", "Dramático", "Fantasía", "Lírico", "Misterio", "Narrativo", "Poesía ", "Romántico", "Terror" }));
         cboGenero.addActionListener(this::cboGeneroActionPerformed);
-
-        cboAutores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Autores" }));
 
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(this::btnBuscarActionPerformed);

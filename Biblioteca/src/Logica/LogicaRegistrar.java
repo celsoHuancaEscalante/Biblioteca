@@ -66,11 +66,11 @@ public class LogicaRegistrar {
             }
             
             // ============================================
-            // VERIFICAR/CREAR GÉNERO
+            // OBTENER GÉNERO (ya existe en BD)
             // ============================================
-            Genero genero = verificarOCrearGenero(nombreGenero);
-            if (genero == null) {
-                return "Error al procesar el género";
+            Genero genero = obtenerGenero(nombreGenero);
+                if (genero == null) {
+                return "El género seleccionado no existe en la base de datos";
             }
             
             // ============================================
@@ -172,28 +172,24 @@ public class LogicaRegistrar {
         return nuevaEditorial;
     }
     
-    private Genero verificarOCrearGenero(String nombreGenero) {
+    public java.util.List<String> obtenerGenerosParaComboBox() {
+        java.util.List<String> generos = new java.util.ArrayList<>();
+        for (Genero g : generoAD.obtenerTodos()) {
+            generos.add(g.getNombre());
+        }
+        return generos;
+    }
+
+// Método simplificado para obtener un género por nombre
+    private Genero obtenerGenero(String nombreGenero) {
         List<Genero> generosEnBD = generoAD.obtenerTodos();
-        
-        // Buscar si ya existe
+    
         for (Genero g : generosEnBD) {
             if (g.getNombre().equalsIgnoreCase(nombreGenero)) {
                 return g;
             }
         }
-        
-        // Si no existe, crear uno nuevo
-        Genero nuevoGenero = new Genero(0, nombreGenero);
-        generoAD.insertar(nuevoGenero);
-        
-        // Obtener el ID asignado
-        generosEnBD = generoAD.obtenerTodos();
-        for (Genero g : generosEnBD) {
-            if (g.getNombre().equals(nombreGenero)) {
-                return g;
-            }
-        }
-        return nuevoGenero;
+        return null;  // No encontrado
     }
     
     // ========== ELIMINAR LIBRO ==========
