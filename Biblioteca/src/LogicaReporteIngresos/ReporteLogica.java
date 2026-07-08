@@ -21,14 +21,18 @@ public class ReporteLogica {
     }
     
     public long calcularDiasRetraso (java.sql.Date fechaVencimientoSql, java.sql.Date fechaDevolucionSql) {
+        // CONDICIÓN: Si cualquiera de las dos fechas de la base de datos es null retorna en 0 doas de penalizacion
         if (fechaVencimientoSql == null || fechaDevolucionSql == null ){
             return 0;
         }
         
+        // TRASPASO DE API: Convierte el formato antiguo 'java.sql.Date' a la API 'LocalDate'
         LocalDate fechaVencimiento = fechaVencimientoSql.toLocalDate();
         LocalDate fechaDevolucion = fechaDevolucionSql.toLocalDate();
-            
+        
+        // CONDICIÓN: Verifica si el día de devolución ocurrió cronológicamente después del vencimiento
         if (fechaDevolucion.isAfter(fechaVencimiento)) {
+            // Retorna calculando la distancia exacta en días entre ambas fechas y la devuelve
             return ChronoUnit.DAYS.between(fechaVencimiento, fechaDevolucion);
         }
         return 0;
@@ -38,9 +42,14 @@ public class ReporteLogica {
         return precioBase + (diasRetraso * multaDiaria); 
     }
     
+    /**
+     * Extrae de forma masiva el historial de todos los préstamos que ya han sido cerrados (devueltos).
+     * @return Un ArrayList cargado con objetos 'ReporteFila', listos para ser consumidos por la tabla gráfica.
+     */    
     public ArrayList <ReporteFila> obtenerHistorialGeneral () {
+        // Instanciamiento de la lista dinámica vacía 
         ArrayList <ReporteFila> lista = new ArrayList<>();
-        // Consulta
+        // Consulta sql relacional con multiples uniones
         String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
            + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
            + "FROM detalle_prestamo dp "
@@ -54,17 +63,18 @@ public class ReporteLogica {
            + " ORDER BY p.id_prestamo ASC";
         
         try {
-            //Conetctar la clase "ConnectMySql"
+            // Solicita a la clase ConnectMySQL que abra el canal de comunicación
             Connection cn = ConnectMySQL.conn();
-            // Preparamos la orden
+            // Prepara la estructura de la consulta SQL 
             PreparedStatement pst = cn.prepareStatement(sql);
-            // Traemos los datos de XAMPP
+            // Dispara la orden en MySQL y almacena el puntero de las filas devueltas en 'rs'
             ResultSet rs = pst.executeQuery(); 
-            //Formato de fecha
+            // Define el formato latino para convertir fechas en caso de uso alterno
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             
+            // Recorre el ResultSet fila por fila mientras existan registros hacia adelante
             while (rs.next()) {                
-             // 1. Reconstruimos los objetos base necesarios paso a paso
+             // 1. Reconstruimos de los objetos o datos
                 Cliente cliente = new Cliente();
                 cliente.setDni(rs.getString("dni"));
                 
@@ -93,9 +103,13 @@ public class ReporteLogica {
                 detalle.setPrecioPrestamoAplicado(rs.getDouble("precio_base"));
                 
                 // 2. Cálculos financieros
+                // Extrae la fecha de vencimiento original de la fila 
                 java.sql.Date fechaVenc = rs.getDate("fecha_vencimiento");
+                // Extrae la fecha de devolución real de la fila 
                 java.sql.Date fechaDevol = rs.getDate("fecha_devolucion");
+                // Invoca a 'calcularDiasRetraso' pasándole las fechas obtenidas
                 long diasRetraso = calcularDiasRetraso(fechaVenc, fechaDevol);
+                // Invoca a 'calcularTotalconMulta' procesando los montos económicos y el retraso
                 double total = calcularTotalconMulta(rs.getDouble("precio_base"), diasRetraso, rs.getDouble("multa_diaria"));
                 
                 // 3. Empaquetamos todo usando composición pura
@@ -113,11 +127,18 @@ public class ReporteLogica {
         return lista;
     }
     
+    /**
+     * Extrae el historial de préstamos cerrados restringiendo los resultados a un rango de fechas específico.
+     * @param de Fecha de inicio del filtro temporal (java.util.Date).
+     * @param hasta Fecha de fin del filtro temporal (java.util.Date).
+     * @return Un ArrayList con los objetos 'ReporteFila' que encajaron dentro del rango establecido.
+     */
+    
     public ArrayList <ReporteFila> obtenerHistorialFiltrado (java.util.Date de, java.util.Date hasta){
        ArrayList <ReporteFila> lista = new ArrayList<>();
-       // Consulta
+       // Consulta sql paramtetrizada
         String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
+           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " 
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
            + "JOIN clientes c ON p.dni = c.dni "
@@ -130,13 +151,14 @@ public class ReporteLogica {
            + " ORDER BY p.id_prestamo ASC";
         
         try {
-            //Conetctar la clase "ConnectMySql"
+            // Conecta con el servidor 
             Connection cn = ConnectMySQL.conn();
-            // Preparamos la orden
+            // Prepara la consulta parametrizada
             PreparedStatement pst = cn.prepareStatement(sql);
             
-            //Convertimos las fechas
+            // Convierte la fecha de inicio de Java a formato de fecha compatible 
             java.sql.Date fechaInicioSql = new java.sql.Date(de.getTime());
+            // Convierte la fecha de fin de Java a formato de fecha compatible
             java.sql.Date fechaFinSql = new java.sql.Date(hasta.getTime());
             
             //Asignamos las fechas en orden
@@ -149,7 +171,7 @@ public class ReporteLogica {
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             
             while (rs.next()) {                
-             // 1. Reconstruimos los objetos base necesarios paso a paso
+             // 1. Reconstruimos de los objetos o datos 
                 Cliente cliente = new Cliente();
                 cliente.setDni(rs.getString("dni")); 
                 
@@ -180,8 +202,9 @@ public class ReporteLogica {
                 java.sql.Date fechaVenc = rs.getDate("fecha_vencimiento");
                 java.sql.Date fechaDevol = rs.getDate("fecha_devolucion");
              
-             //le pasamos el vencimiento y la devolucion 
+             // Invoca a 'calcularDiasRetraso' pasándole las fechas obtenidas
              long diasRestraso = calcularDiasRetraso(fechaVenc, fechaDevol);
+             // Invoca a 'calcularTotalconMulta' pasándole las fechas obtenidas
              double total = calcularTotalconMulta(rs.getDouble("precio_base"), diasRestraso, rs.getDouble("multa_diaria"));
              
              //Instanciamos el objeto fila y lo agregamos
