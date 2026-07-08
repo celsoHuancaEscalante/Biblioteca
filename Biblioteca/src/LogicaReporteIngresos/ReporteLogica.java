@@ -69,7 +69,7 @@ public class ReporteLogica {
             PreparedStatement pst = cn.prepareStatement(sql);
             // Dispara la orden en MySQL y almacena el puntero de las filas devueltas en 'rs'
             ResultSet rs = pst.executeQuery(); 
-            // Define el formato latino para convertir fechas en caso de uso alterno
+            // Define el formato para convertir 
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             
             // Recorre el ResultSet fila por fila mientras existan registros hacia adelante
@@ -77,9 +77,9 @@ public class ReporteLogica {
              // 1. Reconstruimos de los objetos o datos
                 Cliente cliente = new Cliente();
                 cliente.setDni(rs.getString("dni"));
-                
+            
                 Prestamo prestamo = new Prestamo();
-                // Asignamos datos usando conversión limpia a LocalDate
+                // Asignamos datos usando conversión limpia
                 prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
                 prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
                 prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
@@ -165,18 +165,19 @@ public class ReporteLogica {
             pst.setDate(1, fechaInicioSql);
             pst.setDate(2, fechaFinSql);
             
-            // Traemos los datos de XAMPP
+             // Dispara la orden en MySQL y almacena el puntero de las filas devueltas en 'rs'
             ResultSet rs = pst.executeQuery(); 
             //Formato de fecha
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             
+             // Recorre el ResultSet fila por fila mientras existan registros hacia adelante
             while (rs.next()) {                
              // 1. Reconstruimos de los objetos o datos 
                 Cliente cliente = new Cliente();
                 cliente.setDni(rs.getString("dni")); 
                 
                 Prestamo prestamo = new Prestamo();
-                // Asignamos datos usando conversión limpia a LocalDate
+                // Asignamos datos usando conversión limpia 
                 prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
                 prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
                 prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
@@ -223,14 +224,22 @@ public class ReporteLogica {
         return lista;
     }
     
+    /**
+     * Consulta la base de datos para extraer los años únicos (sin repetir) en los que existen registros de ganancias.
+     * @return Un ArrayList cargado con números enteros (Integer) ordenados descendentemente.
+     */
     public ArrayList<Integer> obtenerAniosConGanacias () {
+        // Instancia una lista dinámica vacía para alojar los años únicos encontrados
         ArrayList<Integer> anios = new ArrayList<>();
+        //Consulta sql
         String sql = "SELECT DISTINCT YEAR(p.fecha_prestamo) AS anio "
                    + "FROM prestamos p "
                    + "WHERE p.fecha_devolucion IS NOT NULL "
                    + "ORDER BY anio DESC";
         try {            
+            // Conecta con el servidor 
             Connection cn = ConnectMySQL.conn();
+            // Condicion: si el conector de la base de datos es igual a un null, falla 
             if (cn == null) {
             JOptionPane.showMessageDialog(null, "Error");
             return anios;
@@ -238,6 +247,7 @@ public class ReporteLogica {
             PreparedStatement pst = cn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
             
+            //bucle donde recorre fila por fila mientras existan registros hacia adelante
             while (rs.next()) {                
                 anios.add(rs.getInt("anio"));
             }

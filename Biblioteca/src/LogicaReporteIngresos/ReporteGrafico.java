@@ -31,8 +31,9 @@ public class ReporteGrafico {
                     r.getDetalle().getEjemplar().getLibro() != null &&
                     r.getDetalle().getEjemplar().getLibro().getGenero() !=null) {
                 
+                // Extrae el nombre del género navegando por la jerarquía de POO
                 String nombreGenero = r.getDetalle().getEjemplar().getLibro().getGenero().getNombre();
-                
+                // CONDICIÓN: Evalúa que la cadena de texto recuperada contenga un nombre real y válido
                 if (nombreGenero != null && !nombreGenero.isEmpty()) {
                     conteoGeneros.put(nombreGenero, conteoGeneros.getOrDefault(nombreGenero, 0) + 1);
                 }
