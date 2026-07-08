@@ -1,0 +1,254 @@
+
+package LogicaReporteIngresos;
+
+import ClaseBase.*;
+import ConnectXampp.ConnectMySQL;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
+
+public class ReporteLogica {
+    
+
+    public ReporteLogica() {
+    }
+    
+    public long calcularDiasRetraso (java.sql.Date fechaVencimientoSql, java.sql.Date fechaDevolucionSql) {
+        // CONDICIÓN: Si cualquiera de las dos fechas de la base de datos es null retorna en 0 doas de penalizacion
+        if (fechaVencimientoSql == null || fechaDevolucionSql == null ){
+            return 0;
+        }
+        
+        // TRASPASO DE API: Convierte el formato antiguo 'java.sql.Date' a la API 'LocalDate'
+        LocalDate fechaVencimiento = fechaVencimientoSql.toLocalDate();
+        LocalDate fechaDevolucion = fechaDevolucionSql.toLocalDate();
+        
+        // CONDICIÓN: Verifica si el día de devolución ocurrió cronológicamente después del vencimiento
+        if (fechaDevolucion.isAfter(fechaVencimiento)) {
+            // Retorna calculando la distancia exacta en días entre ambas fechas y la devuelve
+            return ChronoUnit.DAYS.between(fechaVencimiento, fechaDevolucion);
+        }
+        return 0;
+        }
+    
+    public double calcularTotalconMulta (double precioBase, long diasRetraso, double multaDiaria) {
+        return precioBase + (diasRetraso * multaDiaria); 
+    }
+    
+    /**
+     * Extrae de forma masiva el historial de todos los préstamos que ya han sido cerrados (devueltos).
+     * @return Un ArrayList cargado con objetos 'ReporteFila', listos para ser consumidos por la tabla gráfica.
+     */    
+    public ArrayList <ReporteFila> obtenerHistorialGeneral () {
+        // Instanciamiento de la lista dinámica vacía 
+        ArrayList <ReporteFila> lista = new ArrayList<>();
+        // Consulta sql relacional con multiples uniones
+        String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
+           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
+           + "FROM detalle_prestamo dp "
+           + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
+           + "JOIN clientes c ON p.dni = c.dni "
+           + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
+           + "JOIN libros l ON e.id_libro = l.id_libro "
+           + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
+           + "JOIN generos g ON l.id_genero = g.id_genero "
+           + "WHERE p.fecha_devolucion IS NOT NULL"
+           + " ORDER BY p.id_prestamo ASC";
+        
+        try {
+            // Solicita a la clase ConnectMySQL que abra el canal de comunicación
+            Connection cn = ConnectMySQL.conn();
+            // Prepara la estructura de la consulta SQL 
+            PreparedStatement pst = cn.prepareStatement(sql);
+            // Dispara la orden en MySQL y almacena el puntero de las filas devueltas en 'rs'
+            ResultSet rs = pst.executeQuery(); 
+            // Define el formato latino para convertir fechas en caso de uso alterno
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            
+            // Recorre el ResultSet fila por fila mientras existan registros hacia adelante
+            while (rs.next()) {                
+             // 1. Reconstruimos de los objetos o datos
+                Cliente cliente = new Cliente();
+                cliente.setDni(rs.getString("dni"));
+                
+                Prestamo prestamo = new Prestamo();
+                // Asignamos datos usando conversión limpia a LocalDate
+                prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
+                prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
+                prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
+                prestamo.setFechaVencimiento(rs.getDate("fecha_vencimiento").toLocalDate());
+                prestamo.setCliente(cliente);
+                
+                Genero genero = new Genero();
+                genero.setNombre(rs.getString("nombre_genero"));
+                
+                
+                Libro libro = new Libro();
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setGenero(genero);
+                
+                Ejemplar ejemplar = new Ejemplar();
+                ejemplar.setIdEjemplar(rs.getInt("id_ejemplar"));
+                ejemplar.setLibro(libro);
+
+                DetallePrestamo detalle = new DetallePrestamo();
+                detalle.setEjemplar(ejemplar);
+                detalle.setPrecioPrestamoAplicado(rs.getDouble("precio_base"));
+                
+                // 2. Cálculos financieros
+                // Extrae la fecha de vencimiento original de la fila 
+                java.sql.Date fechaVenc = rs.getDate("fecha_vencimiento");
+                // Extrae la fecha de devolución real de la fila 
+                java.sql.Date fechaDevol = rs.getDate("fecha_devolucion");
+                // Invoca a 'calcularDiasRetraso' pasándole las fechas obtenidas
+                long diasRetraso = calcularDiasRetraso(fechaVenc, fechaDevol);
+                // Invoca a 'calcularTotalconMulta' procesando los montos económicos y el retraso
+                double total = calcularTotalconMulta(rs.getDouble("precio_base"), diasRetraso, rs.getDouble("multa_diaria"));
+                
+                // 3. Empaquetamos todo usando composición pura
+                ReporteFila reporteFila = new ReporteFila(prestamo, detalle, diasRetraso, total);
+             lista.add(reporteFila);
+            }
+            
+            rs.close();
+            pst.close();
+            cn.close();
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error... " + e.getMessage());
+        }
+        return lista;
+    }
+    
+    /**
+     * Extrae el historial de préstamos cerrados restringiendo los resultados a un rango de fechas específico.
+     * @param de Fecha de inicio del filtro temporal (java.util.Date).
+     * @param hasta Fecha de fin del filtro temporal (java.util.Date).
+     * @return Un ArrayList con los objetos 'ReporteFila' que encajaron dentro del rango establecido.
+     */
+    
+    public ArrayList <ReporteFila> obtenerHistorialFiltrado (java.util.Date de, java.util.Date hasta){
+       ArrayList <ReporteFila> lista = new ArrayList<>();
+       // Consulta sql paramtetrizada
+        String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
+           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " 
+           + "FROM detalle_prestamo dp "
+           + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
+           + "JOIN clientes c ON p.dni = c.dni "
+           + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
+           + "JOIN libros l ON e.id_libro = l.id_libro "
+           + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
+           + "JOIN generos g ON l.id_genero = g.id_genero " 
+           + "WHERE p.fecha_prestamo BETWEEN ? AND ? " 
+           + "AND p.fecha_devolucion IS NOT NULL"
+           + " ORDER BY p.id_prestamo ASC";
+        
+        try {
+            // Conecta con el servidor 
+            Connection cn = ConnectMySQL.conn();
+            // Prepara la consulta parametrizada
+            PreparedStatement pst = cn.prepareStatement(sql);
+            
+            // Convierte la fecha de inicio de Java a formato de fecha compatible 
+            java.sql.Date fechaInicioSql = new java.sql.Date(de.getTime());
+            // Convierte la fecha de fin de Java a formato de fecha compatible
+            java.sql.Date fechaFinSql = new java.sql.Date(hasta.getTime());
+            
+            //Asignamos las fechas en orden
+            pst.setDate(1, fechaInicioSql);
+            pst.setDate(2, fechaFinSql);
+            
+            // Traemos los datos de XAMPP
+            ResultSet rs = pst.executeQuery(); 
+            //Formato de fecha
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            
+            while (rs.next()) {                
+             // 1. Reconstruimos de los objetos o datos 
+                Cliente cliente = new Cliente();
+                cliente.setDni(rs.getString("dni")); 
+                
+                Prestamo prestamo = new Prestamo();
+                // Asignamos datos usando conversión limpia a LocalDate
+                prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
+                prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
+                prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
+                prestamo.setFechaVencimiento(rs.getDate("fecha_vencimiento").toLocalDate());
+                prestamo.setCliente(cliente);
+                
+                Genero genero = new Genero();
+                genero.setNombre(rs.getString("nombre_genero"));
+
+                Libro libro = new Libro();
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setGenero(genero);
+                
+                Ejemplar ejemplar = new Ejemplar();
+                ejemplar.setIdEjemplar(rs.getInt("id_ejemplar"));
+                ejemplar.setLibro(libro);
+
+                DetallePrestamo detalle = new DetallePrestamo();
+                detalle.setEjemplar(ejemplar);
+                detalle.setPrecioPrestamoAplicado(rs.getDouble("precio_base"));
+                
+                // 2. Cálculos financieros
+                java.sql.Date fechaVenc = rs.getDate("fecha_vencimiento");
+                java.sql.Date fechaDevol = rs.getDate("fecha_devolucion");
+             
+             // Invoca a 'calcularDiasRetraso' pasándole las fechas obtenidas
+             long diasRestraso = calcularDiasRetraso(fechaVenc, fechaDevol);
+             // Invoca a 'calcularTotalconMulta' pasándole las fechas obtenidas
+             double total = calcularTotalconMulta(rs.getDouble("precio_base"), diasRestraso, rs.getDouble("multa_diaria"));
+             
+             //Instanciamos el objeto fila y lo agregamos
+             ReporteFila reporteFila = new ReporteFila(prestamo, detalle, diasRestraso, total);
+             lista.add(reporteFila);
+            }
+            
+            rs.close();
+            pst.close();
+            cn.close();
+            
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error... " + e.getMessage());
+        }
+        return lista;
+    }
+    
+    public ArrayList<Integer> obtenerAniosConGanacias () {
+        ArrayList<Integer> anios = new ArrayList<>();
+        String sql = "SELECT DISTINCT YEAR(p.fecha_prestamo) AS anio "
+                   + "FROM prestamos p "
+                   + "WHERE p.fecha_devolucion IS NOT NULL "
+                   + "ORDER BY anio DESC";
+        try {            
+            Connection cn = ConnectMySQL.conn();
+            if (cn == null) {
+            JOptionPane.showMessageDialog(null, "Error");
+            return anios;
+            }
+            PreparedStatement pst = cn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {                
+                anios.add(rs.getInt("anio"));
+            }
+            rs.close();
+            pst.close();
+            cn.close();
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al obtener años de ganacia: " + e.getMessage());
+        }
+        return anios;
+    }
+    
+}
