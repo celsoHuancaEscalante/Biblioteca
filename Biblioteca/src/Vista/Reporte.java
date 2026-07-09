@@ -233,8 +233,9 @@ public class Reporte extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     public void actualizarResumen () {
-        //Cantidad de filas actuales
+        //Lee la cantidad de filas actuales
         int totalPrestamos = tbl_Reporte.getRowCount();
+        //Actualizador del contador
         lbl_CantidadPrestamos.setText(String.valueOf(totalPrestamos));
         
         //Suma de todos los valores de la columna total
@@ -256,11 +257,13 @@ public class Reporte extends javax.swing.JPanel {
     
     
      public void mostrarTabla () {
+         //Reinicia el contador de filas
          modelo.setRowCount(0);
          //traer la lista de objetos
          ArrayList<ReporteFila> listaFilas = logica.obtenerHistorialGeneral();
          
          for (ReporteFila r : listaFilas) {
+             //Instancia un arreglo fijo de 9 celdas, una por columna
              Object [] fila = new Object[9];
              fila [0] = r.getIdPrestamo();
              fila [1] = r.getIdejemplar();
@@ -280,7 +283,7 @@ public class Reporte extends javax.swing.JPanel {
          modelo.setRowCount(0);
          //traer la lista de objetos
          ArrayList<ReporteFila> listaFilas = logica.obtenerHistorialFiltrado(de, hasta);
-         
+         // Instancia el arreglo fijo por 9 celdas 
          for (ReporteFila r : listaFilas) {
              Object [] fila = new Object[9];
              fila [0] = r.getIdPrestamo();
@@ -305,6 +308,7 @@ public class Reporte extends javax.swing.JPanel {
         
         //Conseguimos la lista de datos
         ArrayList<ReporteFila> datosParaGrafico;
+        // Condicion: Si los selectores del calendarios se encuentran vacios
         if (jdc_De.getDate() != null && jdc_Hasta.getDate() != null) {
             datosParaGrafico = logica.obtenerHistorialFiltrado(jdc_De.getDate(), jdc_Hasta.getDate());
         } else {
@@ -327,7 +331,10 @@ public class Reporte extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "No hay datos en la tabla para graficar");
             return;
         }
+        //Casteo para encontrar el jFrame original que sostiene el panel
         JFrame frmPrincipal = (JFrame) SwingUtilities.getWindowAncestor(this);
+        
+        //Instanciamiento de la ventana de lineas
         dlg_GraficoLineas ventanaGrafico = new dlg_GraficoLineas(frmPrincipal, true);
         
         ventanaGrafico.setLocationRelativeTo(this);
@@ -335,6 +342,7 @@ public class Reporte extends javax.swing.JPanel {
     }//GEN-LAST:event_btn_Graficar2ActionPerformed
 
     private void btn_BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BuscarActionPerformed
+        // Creacion de los objetos de tiempo de los componentes del calendar        
         java.util.Date FechaInicio = jdc_De.getDate();
         java.util.Date FechaFin = jdc_Hasta.getDate();
         // Validacion 
@@ -343,6 +351,7 @@ public class Reporte extends javax.swing.JPanel {
             return;
         }
         // Validacion de rango
+        //Condicion: evalua si la fecha inicial esta situada en el tiempo despues de la fecha final
         if (FechaInicio.after(FechaFin)) {
             JOptionPane.showMessageDialog(this, "La fecha 'De' no puede ser posterior a la fecha 'Hasta'.");
             return;
