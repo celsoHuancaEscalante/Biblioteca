@@ -1,7 +1,7 @@
 package VistaDeProyecto;
 
-import Data.Cliente;
-import Data.GestionCliente;
+import ClaseBase.Cliente;
+import ClaseBase.GestionCliente;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
