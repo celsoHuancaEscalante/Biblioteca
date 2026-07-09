@@ -11,3 +11,5 @@ public class Prestamo {
     private LocalDate fechaVencimiento;
     private LinkedList<DetallePrestamo> detalles;
 }
+
+
