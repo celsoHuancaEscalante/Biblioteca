@@ -6,9 +6,9 @@ public class Cliente {
     private String dni;
     private String primerNombre;
     private String primerApellido;
-    private String telefono;
+    private String telefono; 
     private String correo;
-    private LocalDate fechaRegistro;
+    private LocalDate fechaRegistro; 
 
     public Cliente(String dni, String primerNombre, String primerApellido, String telefono, String correo) {
         this.dni = dni;
