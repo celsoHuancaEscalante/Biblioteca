@@ -55,7 +55,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         cboAutores.removeAllItems();
         cboGenero.removeAllItems();
         
-        // LLAMAR A LÓGICA
+        
         for (String genero : logica.obtenerGeneros()) {
             cboGenero.addItem(genero);
         }
@@ -68,6 +68,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
     private void cargarTabla() {
         modeloTabla.setRowCount(0);
         
+
         // LLAMAR A LÓGICA
         List<Object[]> filas = logica.obtenerLibrosParaTabla();
         for (Object[] fila : filas) {
@@ -89,8 +90,10 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         String titulo = txtBuscarPorTitulo.getText();
         modeloTabla.setRowCount(0);
         
+
         // LLAMAR A LÓGICA
         List<Object[]> filas = logica.buscarPorTitulo(titulo);
+
         for (Object[] fila : filas) {
             modeloTabla.addRow(fila);
         }
@@ -287,7 +290,6 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         
         modeloTabla.setRowCount(0);
         
-        // LLAMAR A LÓGICA
         
         List<Object[]> filas = logica.filtrarLibros(genero, autor);
         for (Object[] fila : filas) {

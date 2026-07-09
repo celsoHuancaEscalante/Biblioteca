@@ -74,7 +74,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
     
     private void cargarTabla() {
         modeloTabla.setRowCount(0);
-        // LLAMAR A LÓGICA
+        
         for (Object[] fila : logica.obtenerLibrosParaTabla()) {
             modeloTabla.addRow(fila);
         }
@@ -90,7 +90,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         
         String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
         
-        // LLAMAR A LÓGICA
+        
         libroActual = logica.buscarLibroPorTitulo(titulo);
         
         if (libroActual != null) {
@@ -119,7 +119,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
             String nombreGenero = (String) cboGenero.getSelectedItem();
             int stock = Integer.parseInt(txtStock.getText());
             
-            // LLAMAR A LÓGICA
+            
             String resultado = logica.guardarLibro(titulo, nombreAutor, nombreEditorial, 
                                                    ano, nombreGenero, stock, libroActual);
             
@@ -151,7 +151,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         );
         
         if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
-            // LLAMAR A LÓGICA
+            
             String resultado = logica.eliminarLibro(titulo);
             
             JOptionPane.showMessageDialog(this, resultado);
@@ -396,7 +396,6 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
     /**
      * @param args the command line arguments
      */
-    //SE BORRO METODO
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardarLibro;
