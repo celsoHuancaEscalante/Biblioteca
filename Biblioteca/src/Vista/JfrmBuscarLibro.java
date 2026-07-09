@@ -98,7 +98,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
             modeloTabla.addRow(fila);
         }
         
-        lblTotalLibros.setText("" + filas.size());
+        lblTotalLibros.setText("" + logica.calcularTotalEjemplares(filas));
     }
     
     public void actualizarTablaDesdeDialog() {
@@ -296,7 +296,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
             modeloTabla.addRow(fila);
         }
         
-        lblTotalLibros.setText("" + filas.size());
+        lblTotalLibros.setText("" + logica.calcularTotalEjemplares(filas));
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
