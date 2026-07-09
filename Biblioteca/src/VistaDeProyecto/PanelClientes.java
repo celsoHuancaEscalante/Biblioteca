@@ -8,11 +8,11 @@ import javax.swing.table.DefaultTableModel;
 
 public class PanelClientes extends javax.swing.JPanel {
 
-    private frmPrincipal frame;//comunicacion entre panel clientes y frmprincipal
+    private frmMenu frame;//comunicacion entre panel clientes y frmprincipal
     DefaultTableModel modelo;
     GestionCliente gestion = new GestionCliente();
 
-    public PanelClientes(frmPrincipal frame) {
+    public PanelClientes(frmMenu frame) {
         initComponents();
         this.frame = frame;
         //Configuración del modelo de la tabla
