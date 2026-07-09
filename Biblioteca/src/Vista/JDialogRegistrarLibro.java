@@ -6,6 +6,7 @@ package Vista;
 
 import ClaseBase.*;
 import Logica.LogicaRegistrar;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -35,18 +36,15 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         cargarTabla();
     
         // Agregar doble clic en tabla para eliminar
-        tblLibros.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+        tblLibros.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     eliminarLibroDesdeTabla();
                 }
             }
         });
     
-        // Configurar botones
-        btnGuardarLibro.addActionListener(e -> guardarLibro());
-        btnRegresar.addActionListener(e -> dispose());
-        btnLimpiar.addActionListener(e -> limpiarFormulario());
+        
     
         setLocationRelativeTo(jfrm);
         setVisible(true);
@@ -86,7 +84,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         int filaSeleccionada = tblLibros.getSelectedRow();
         
         if (filaSeleccionada == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Selecciona una fila para modificar");
+            JOptionPane.showMessageDialog(this, "Selecciona una fila para modificar");
             return;
         }
         
@@ -104,7 +102,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
             cboGenero.setSelectedItem(libroActual.getGenero().getNombre());
             txtStock.setText(String.valueOf(libroActual.getStock()));
             
-            javax.swing.JOptionPane.showMessageDialog(this, "Campos completados. Modifica y presiona Guardar.");
+            JOptionPane.showMessageDialog(this, "Campos completados. Modifica y presiona Guardar.");
         }
     }
     
@@ -125,14 +123,14 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
             String resultado = logica.guardarLibro(titulo, nombreAutor, nombreEditorial, 
                                                    ano, nombreGenero, stock, libroActual);
             
-            javax.swing.JOptionPane.showMessageDialog(this, resultado);
+            JOptionPane.showMessageDialog(this, resultado);
             
             limpiarFormulario();
             cargarTabla();
             jfrm.actualizarTablaDesdeDialog();
             
         } catch (NumberFormatException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Verifica que Año y Stock sean números");
+            JOptionPane.showMessageDialog(this, "Verifica que Año y Stock sean números");
         }
     }
     
@@ -145,18 +143,18 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         
         String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
         
-        int confirmacion = javax.swing.JOptionPane.showConfirmDialog(
+        int confirmacion = JOptionPane.showConfirmDialog(
             this,
             "¿Eliminar el libro: " + titulo + "?",
             "Confirmar eliminación",
-            javax.swing.JOptionPane.YES_NO_OPTION
+            JOptionPane.YES_NO_OPTION
         );
         
         if (confirmacion == javax.swing.JOptionPane.YES_OPTION) {
             // LLAMAR A LÓGICA
             String resultado = logica.eliminarLibro(titulo);
             
-            javax.swing.JOptionPane.showMessageDialog(this, resultado);
+            JOptionPane.showMessageDialog(this, resultado);
             cargarTabla();
             jfrm.actualizarTablaDesdeDialog();
         }

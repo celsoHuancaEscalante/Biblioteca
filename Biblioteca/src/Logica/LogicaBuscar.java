@@ -3,7 +3,7 @@ package Logica;
 
 import ClaseBase.*;
 import Datos.*;
-import java.util.List;
+import java.util.*;
 
 public class LogicaBuscar {
     
@@ -14,8 +14,8 @@ public class LogicaBuscar {
     private EjemplarAD ejemplarAD = new EjemplarAD();
     
     // Retorna los datos para el ComboBox de Géneros
-    public java.util.List<String> obtenerGeneros() {
-        java.util.List<String> generos = new java.util.ArrayList<>();
+    public List<String> obtenerGeneros() {
+        List<String> generos = new ArrayList<>();
         generos.add("Todos");
         for (Genero g : generoAD.obtenerTodos()) {
             generos.add(g.getNombre());
@@ -24,8 +24,8 @@ public class LogicaBuscar {
     }
     
     // Retorna los datos para el ComboBox de Autores
-    public java.util.List<String> obtenerAutores() {
-        java.util.List<String> autores = new java.util.ArrayList<>();
+    public List<String> obtenerAutores() {
+        List<String> autores = new ArrayList<>();
         autores.add("Todos");
         for (Autor a : autorAD.obtenerTodos()) {
             autores.add(a.toString());
@@ -34,8 +34,8 @@ public class LogicaBuscar {
     }
     
     // Retorna todos los libros con sus datos formateados
-    public java.util.List<Object[]> obtenerLibrosParaTabla() {
-        java.util.List<Object[]> filas = new java.util.ArrayList<>();
+    public List<Object[]> obtenerLibrosParaTabla() {
+        List<Object[]> filas = new ArrayList<>();
         List<Libro> libros = libroAD.obtenerTodos();
         
         for (Libro libro : libros) {
@@ -57,12 +57,12 @@ public class LogicaBuscar {
     }
     
     // Buscar libros por título en tiempo real
-    public java.util.List<Object[]> buscarPorTitulo(String titulo) {
+    public List<Object[]> buscarPorTitulo(String titulo) {
         if (titulo.isEmpty()) {
             return obtenerLibrosParaTabla();
         }
         
-        java.util.List<Object[]> filas = new java.util.ArrayList<>();
+        List<Object[]> filas = new ArrayList<>();
         List<Libro> libros = libroAD.buscarPorTitulo(titulo);
         
         for (Libro libro : libros) {
@@ -84,7 +84,7 @@ public class LogicaBuscar {
     }
     
     // Filtrar por género y autor
-    public java.util.List<Object[]> filtrarLibros(String generoSeleccionado, String autorSeleccionado) {
+    public List<Object[]> filtrarLibros(String generoSeleccionado, String autorSeleccionado) {
         Genero genero = null;
         Autor autor = null;
         
@@ -106,7 +106,7 @@ public class LogicaBuscar {
             }
         }
         
-        java.util.List<Object[]> filas = new java.util.ArrayList<>();
+        List<Object[]> filas = new ArrayList<>();
         List<Libro> libros = libroAD.filtrar(genero, autor);
         
         for (Libro libro : libros) {
@@ -127,8 +127,8 @@ public class LogicaBuscar {
         return filas;
     }
     
-    // Calcular total de ejemplares
-    public int calcularTotalEjemplares(java.util.List<Object[]> filas) {
+    
+    public int calcularTotalEjemplares(List<Object[]> filas) {
         int total = 0;
         for (Object[] fila : filas) {
             total += (Integer) fila[5]; // Columna "Stock"

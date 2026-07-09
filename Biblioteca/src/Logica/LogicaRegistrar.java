@@ -3,7 +3,7 @@ package Logica;
 
 import Datos.*;
 import ClaseBase.*;
-import java.util.List;
+import java.util.*;
 
 public class LogicaRegistrar {
     
@@ -14,9 +14,9 @@ public class LogicaRegistrar {
     private GeneroAD generoAD = new GeneroAD();
     private EjemplarAD ejemplarAD = new EjemplarAD();
     
-    // ========== CARGAR TABLA ==========
-    public java.util.List<Object[]> obtenerLibrosParaTabla() {
-        java.util.List<Object[]> filas = new java.util.ArrayList<>();
+    
+    public List<Object[]> obtenerLibrosParaTabla() {
+        List<Object[]> filas = new ArrayList<>();
         List<Libro> libros = libroAD.obtenerTodos();
         
         for (Libro libro : libros) {
@@ -33,7 +33,7 @@ public class LogicaRegistrar {
         return filas;
     }
     
-    // ========== BUSCAR LIBRO POR TÍTULO ==========
+    
     public Libro buscarLibroPorTitulo(String titulo) {
         List<Libro> libros = libroAD.obtenerTodos();
         for (Libro libro : libros) {
@@ -44,38 +44,30 @@ public class LogicaRegistrar {
         return null;
     }
     
-    // ========== GUARDAR LIBRO (INSERTAR O ACTUALIZAR) ==========
+    //GUARDAR LIBRO (INSERTAR O ACTUALIZAR)
     public String guardarLibro(String titulo, String nombreAutor, String nombreEditorial,
                                int ano, String nombreGenero, int stock, Libro libroActual) {
         
         try {
-            // ============================================
-            // VERIFICAR/CREAR AUTOR
-            // ============================================
+            // VERIFICAR O CREAR AUTOR
             Autor autor = verificarOCrearAutor(nombreAutor);
             if (autor == null) {
                 return "Error al procesar el autor";
             }
             
-            // ============================================
-            // VERIFICAR/CREAR EDITORIAL
-            // ============================================
+            // VERIFICAR O CREAR EDITORIAL
             Editorial editorial = verificarOCrearEditorial(nombreEditorial);
             if (editorial == null) {
                 return "Error al procesar la editorial";
             }
             
-            // ============================================
-            // OBTENER GÉNERO (ya existe en BD)
-            // ============================================
+            // OBTENER GÉNERO DE LA BD
             Genero genero = obtenerGenero(nombreGenero);
                 if (genero == null) {
                 return "El género seleccionado no existe en la base de datos";
             }
             
-            // ============================================
             // INSERTAR O ACTUALIZAR LIBRO
-            // ============================================
             if (libroActual != null) {
                 // MODIFICAR LIBRO EXISTENTE
                 libroActual.setTitulo(titulo);
@@ -115,7 +107,6 @@ public class LogicaRegistrar {
         }
     }
     
-    // ========== MÉTODOS AUXILIARES ==========
     
     private Autor verificarOCrearAutor(String nombreAutor) {
         List<Autor> autoresEnBD = autorAD.obtenerTodos();
@@ -172,8 +163,8 @@ public class LogicaRegistrar {
         return nuevaEditorial;
     }
     
-    public java.util.List<String> obtenerGenerosParaComboBox() {
-        java.util.List<String> generos = new java.util.ArrayList<>();
+    public List<String> obtenerGenerosParaComboBox() {
+        List<String> generos = new ArrayList<>();
         for (Genero g : generoAD.obtenerTodos()) {
             generos.add(g.getNombre());
         }
@@ -192,7 +183,6 @@ public class LogicaRegistrar {
         return null;  // No encontrado
     }
     
-    // ========== ELIMINAR LIBRO ==========
     public String eliminarLibro(String titulo) {
         List<Libro> libros = libroAD.obtenerTodos();
         

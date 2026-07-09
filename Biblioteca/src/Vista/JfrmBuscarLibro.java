@@ -6,6 +6,7 @@ package Vista;
 
 import ClaseBase.*;
 import Logica.LogicaBuscar;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -28,8 +29,8 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         cargarTabla();
     
     // Agregar KeyListener al txtBuscarLibro (autocompletado)
-    txtBuscarPorTitulo.addKeyListener(new java.awt.event.KeyAdapter() {
-        public void keyReleased(java.awt.event.KeyEvent evt) {
+    txtBuscarPorTitulo.addKeyListener(new KeyAdapter() {
+        public void keyReleased(KeyEvent evt) {
             buscarEnTiempo();
         }
     });
@@ -68,7 +69,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         modeloTabla.setRowCount(0);
         
         // LLAMAR A LÓGICA
-        java.util.List<Object[]> filas = logica.obtenerLibrosParaTabla();
+        List<Object[]> filas = logica.obtenerLibrosParaTabla();
         for (Object[] fila : filas) {
             modeloTabla.addRow(fila);
         }
@@ -89,7 +90,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         modeloTabla.setRowCount(0);
         
         // LLAMAR A LÓGICA
-        java.util.List<Object[]> filas = logica.buscarPorTitulo(titulo);
+        List<Object[]> filas = logica.buscarPorTitulo(titulo);
         for (Object[] fila : filas) {
             modeloTabla.addRow(fila);
         }
@@ -287,7 +288,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
         modeloTabla.setRowCount(0);
         
         // LLAMAR A LÓGICA
-        //java.util.
+        
         List<Object[]> filas = logica.filtrarLibros(genero, autor);
         for (Object[] fila : filas) {
             modeloTabla.addRow(fila);
