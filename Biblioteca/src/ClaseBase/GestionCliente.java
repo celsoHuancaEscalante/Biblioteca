@@ -21,7 +21,6 @@ public class GestionCliente {
             int filas = ps.executeUpdate();
             return filas > 0;
         }
-        
     }
 
     public boolean tienePrestamos(String dni) throws SQLException {
