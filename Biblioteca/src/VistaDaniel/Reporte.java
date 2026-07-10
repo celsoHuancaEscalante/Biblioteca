@@ -79,7 +79,7 @@ public class Reporte extends javax.swing.JPanel {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Intervalo");
 
-        btn_Buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/search (3).png"))); // NOI18N
+        btn_Buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/search (3).png"))); // NOI18N
         btn_Buscar.addActionListener(this::btn_BuscarActionPerformed);
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -90,7 +90,7 @@ public class Reporte extends javax.swing.JPanel {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Hasta:");
 
-        btn_Refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/Refresh (1).png"))); // NOI18N
+        btn_Refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/Refresh (1).png"))); // NOI18N
         btn_Refresh.addActionListener(this::btn_RefreshActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

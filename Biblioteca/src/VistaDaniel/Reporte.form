@@ -135,7 +135,7 @@
             <Component class="javax.swing.JButton" name="btn_Buscar">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/recursos/search (3).png"/>
+                  <Image iconType="3" name="/RecursosDaniel/search (3).png"/>
                 </Property>
               </Properties>
               <Events>
@@ -171,7 +171,7 @@
             <Component class="javax.swing.JButton" name="btn_Refresh">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/recursos/Refresh (1).png"/>
+                  <Image iconType="3" name="/RecursosDaniel/Refresh (1).png"/>
                 </Property>
               </Properties>
               <Events>
