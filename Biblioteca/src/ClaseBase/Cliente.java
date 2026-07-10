@@ -10,6 +10,18 @@ public class Cliente {
     private String correo;
     private LocalDate fechaRegistro; 
 
+    public Cliente() {
+    }
+    
+    public Cliente(String dni, String primerNombre, String primerApellido, String telefono, String correo) {
+        this.dni = dni;
+        this.primerNombre = primerNombre;
+        this.primerApellido = primerApellido;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.fechaRegistro = LocalDate.now();
+    }
+    
     public String getDni() {
         return dni;
     }
