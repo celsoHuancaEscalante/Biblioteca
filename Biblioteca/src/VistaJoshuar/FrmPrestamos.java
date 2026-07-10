@@ -1,4 +1,4 @@
-package Vista.Prestamos;
+package VistaJoshuar;
 
 //Actualización 1.1...
 
@@ -83,7 +83,6 @@ private final int COL_MULTA = 7;
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1100, 715));
 
         jPanel1.setBackground(new java.awt.Color(102, 255, 255));
 
