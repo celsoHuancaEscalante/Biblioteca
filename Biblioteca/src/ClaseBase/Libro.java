@@ -10,6 +10,9 @@ public class Libro implements Mostrar{
    private int stock;
    private int anioPublicacion;
 
+    public Libro() {
+    }
+
     public Libro(int idLibro, Categoria categoria, Genero genero, Autor autor, Editorial editorial, String titulo, int stock, int anioPublicacion) {
         this.idLibro = idLibro;
         this.categoria = categoria;

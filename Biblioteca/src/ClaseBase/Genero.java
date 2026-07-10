@@ -4,6 +4,10 @@ public class Genero implements Mostrar {
     private int idGenero;
     private String nombre;
 
+    public Genero() {
+    }
+
+    
     public Genero(int idGenero, String nombre) {
         this.idGenero = idGenero;
         this.nombre = nombre;
