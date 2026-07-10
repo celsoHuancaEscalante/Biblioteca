@@ -1,5 +1,5 @@
 
-package LogicaReporteIngresos;
+package LogicaDaniel;
 import ClaseBase.DetallePrestamo;
 import ClaseBase.Prestamo;
 import java.time.format.DateTimeFormatter;

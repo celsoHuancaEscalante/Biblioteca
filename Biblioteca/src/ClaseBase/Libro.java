@@ -1,6 +1,6 @@
 package ClaseBase;
 
-public class Libro {
+public class Libro implements Mostrar{
    private int idLibro;
    private Categoria categoria;
    private Genero genero;
@@ -10,6 +10,23 @@ public class Libro {
    private int stock;
    private int anioPublicacion;
 
+    public Libro(int idLibro, Categoria categoria, Genero genero, Autor autor, Editorial editorial, String titulo, int stock, int anioPublicacion) {
+        this.idLibro = idLibro;
+        this.categoria = categoria;
+        this.genero = genero;
+        this.autor = autor;
+        this.editorial = editorial;
+        this.titulo = titulo;
+        this.stock = stock;
+        this.anioPublicacion = anioPublicacion;
+    }
+
+    @Override
+    public String mostrarDatos() {
+        return titulo;
+    }
+    
+    
     public int getIdLibro() {
         return idLibro;
     }

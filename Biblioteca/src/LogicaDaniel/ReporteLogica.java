@@ -1,5 +1,5 @@
 
-package LogicaReporteIngresos;
+package LogicaDaniel;
 
 import ClaseBase.*;
 import ConnectXampp.ConnectMySQL;

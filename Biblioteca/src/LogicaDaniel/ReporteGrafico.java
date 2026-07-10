@@ -1,5 +1,5 @@
 
-package LogicaReporteIngresos;
+package LogicaDaniel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

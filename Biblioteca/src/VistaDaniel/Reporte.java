@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package VistaReporteIngresos;
+package VistaDaniel;
 
-import LogicaReporteIngresos.ReporteFila;
-import LogicaReporteIngresos.ReporteGrafico;
-import LogicaReporteIngresos.ReporteLogica;
+import LogicaDaniel.ReporteFila;
+import LogicaDaniel.ReporteGrafico;
+import LogicaDaniel.ReporteLogica;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

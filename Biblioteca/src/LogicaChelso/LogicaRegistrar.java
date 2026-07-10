@@ -1,7 +1,11 @@
 
-package Logica;
+package LogicaChelso;
 
-import Datos.*;
+import DatosChelso.EjemplarAD;
+import DatosChelso.EditorialAD;
+import DatosChelso.AutorAD;
+import DatosChelso.GeneroAD;
+import DatosChelso.LibroAD;
 import ClaseBase.*;
 import java.util.*;
 

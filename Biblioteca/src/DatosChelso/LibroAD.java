@@ -1,5 +1,5 @@
 
-package Datos;
+package DatosChelso;
 
 import ClaseBase.*;
 import ConnectXampp.ConnectMySQL;
@@ -45,6 +45,7 @@ public class LibroAD {
                 
                 Libro libro = new Libro(
                     rs.getInt("idLibro"),
+                    
                     genero,
                     autor,
                     editorial,
