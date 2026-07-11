@@ -1,11 +1,7 @@
 
 package LogicaChelso;
 
-import DatosChelso.EjemplarAD;
-import DatosChelso.EditorialAD;
-import DatosChelso.AutorAD;
-import DatosChelso.GeneroAD;
-import DatosChelso.LibroAD;
+import DatosChelso.*;
 import ClaseBase.*;
 import java.util.*;
 
@@ -17,6 +13,7 @@ public class LogicaRegistrar {
     private EditorialAD editorialAD = new EditorialAD();
     private GeneroAD generoAD = new GeneroAD();
     private EjemplarAD ejemplarAD = new EjemplarAD();
+    private CategoriaAD categoriaAD = new CategoriaAD();
     
     
     public List<Object[]> obtenerLibrosParaTabla() {
@@ -48,6 +45,27 @@ public class LogicaRegistrar {
         return null;
     }
     
+    private Categoria calcularCategoria(int anoPublicacion) {
+        int añoActual = java.time.LocalDate.now().getYear();
+        int antiguedad = añoActual - anoPublicacion;
+        
+        String nombreCategoria;
+        if (antiguedad <= 15) {
+            nombreCategoria = "Nuevo";
+        } else if (antiguedad <= 35) {
+            nombreCategoria = "Regular";
+        } else {
+            nombreCategoria = "Antiguo";
+        }
+        
+        Categoria categoria = categoriaAD.obtenerPorNombre(nombreCategoria);
+        if (categoria == null) {
+            categoria = new Categoria(0, nombreCategoria);
+        }
+        
+        return categoria;
+    }
+    
     //GUARDAR LIBRO (INSERTAR O ACTUALIZAR)
     public String guardarLibro(String titulo, String nombreAutor, String nombreEditorial,
                                int ano, String nombreGenero, int stock, Libro libroActual) {
@@ -71,6 +89,8 @@ public class LogicaRegistrar {
                 return "El género seleccionado no existe en la base de datos";
             }
             
+            Categoria categoria = calcularCategoria(ano);
+            
             // INSERTAR O ACTUALIZAR LIBRO
             if (libroActual != null) {
                 // MODIFICAR LIBRO EXISTENTE
@@ -79,6 +99,7 @@ public class LogicaRegistrar {
                 libroActual.setEditorial(editorial);
                 libroActual.setAnioPublicacion(ano);
                 libroActual.setGenero(genero);
+                libroActual.setCategoria(categoria);
                 libroActual.setStock(stock);
                 
                 boolean actualizado = libroAD.actualizar(libroActual);
@@ -90,7 +111,7 @@ public class LogicaRegistrar {
                 }
             } else {
                 // INSERTAR NUEVO LIBRO
-                Libro nuevoLibro = new Libro(0, genero, autor, editorial, titulo, stock, ano);
+                Libro nuevoLibro = new Libro(0,categoria, genero, autor, editorial, titulo, stock, ano);
                 int idLibroInsertado = libroAD.insertar(nuevoLibro);
                 
                 if (idLibroInsertado > 0) {
