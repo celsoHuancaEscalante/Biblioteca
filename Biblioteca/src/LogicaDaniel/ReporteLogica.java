@@ -50,17 +50,18 @@ public class ReporteLogica {
         // Instanciamiento de la lista dinámica vacía 
         ArrayList <ReporteFila> lista = new ArrayList<>();
         // Consulta sql relacional con multiples uniones
-        String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
+        String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
+           + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " // <-- Corregido a g.Nombre
            + "FROM detalle_prestamo dp "
-           + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
-           + "JOIN clientes c ON p.dni = c.dni "
-           + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
-           + "JOIN libros l ON e.id_libro = l.id_libro "
-           + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
-           + "JOIN generos g ON l.id_genero = g.id_genero "
-           + "WHERE p.fecha_devolucion IS NOT NULL"
-           + " ORDER BY p.id_prestamo ASC";
+           + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
+           + "JOIN clientes c ON p.DNICliente = c.DNI "
+           + "JOIN ejemplares e ON dp.IDEjemplar = e.IDEjemplar "
+           + "JOIN libros l ON e.IDLibro = l.IDLibro "
+           + "JOIN categorias cat ON l.IDCategoria = cat.IDCategoria "
+           + "JOIN generos g ON l.IDGenero = g.IDGenero "
+           + "WHERE p.FechaDevolucion IS NOT NULL"
+           + " ORDER BY p.IDPrestamo ASC";
         
         try {
             // Solicita a la clase ConnectMySQL que abra el canal de comunicación
@@ -137,18 +138,19 @@ public class ReporteLogica {
     public ArrayList <ReporteFila> obtenerHistorialFiltrado (java.util.Date de, java.util.Date hasta){
        ArrayList <ReporteFila> lista = new ArrayList<>();
        // Consulta sql paramtetrizada
-        String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " 
+        String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
+           + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " // <-- Corregido a g.Nombre
            + "FROM detalle_prestamo dp "
-           + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
-           + "JOIN clientes c ON p.dni = c.dni "
-           + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
-           + "JOIN libros l ON e.id_libro = l.id_libro "
-           + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
-           + "JOIN generos g ON l.id_genero = g.id_genero " 
-           + "WHERE p.fecha_prestamo BETWEEN ? AND ? " 
-           + "AND p.fecha_devolucion IS NOT NULL"
-           + " ORDER BY p.id_prestamo ASC";
+           + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
+           + "JOIN clientes c ON p.DNICliente = c.DNI "
+           + "JOIN ejemplares e ON dp.IDEjemplar = e.IDEjemplar "
+           + "JOIN libros l ON e.IDLibro = l.IDLibro "
+           + "JOIN categorias cat ON l.IDCategoria = cat.IDCategoria "
+           + "JOIN generos g ON l.IDGenero = g.IDGenero "
+           + "WHERE p.FechaPrestamo BETWEEN ? AND ? " 
+           + "AND p.FechaDevolucion IS NOT NULL"
+           + " ORDER BY p.IDPrestamo ASC";
         
         try {
             // Conecta con el servidor 
@@ -225,10 +227,10 @@ public class ReporteLogica {
     
     public ArrayList<Integer> obtenerAniosConGanacias () {
         ArrayList<Integer> anios = new ArrayList<>();
-        String sql = "SELECT DISTINCT YEAR(p.fecha_prestamo) AS anio "
-                   + "FROM prestamos p "
-                   + "WHERE p.fecha_devolucion IS NOT NULL "
-                   + "ORDER BY anio DESC";
+        String sql = "SELECT DISTINCT YEAR(p.FechaPrestamo) AS anio "
+           + "FROM prestamos p "
+           + "WHERE p.FechaDevolucion IS NOT NULL "
+           + "ORDER BY anio DESC";
         try {            
             Connection cn = ConnectMySQL.conn();
             if (cn == null) {

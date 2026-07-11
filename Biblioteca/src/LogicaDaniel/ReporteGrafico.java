@@ -70,6 +70,11 @@ public class ReporteGrafico {
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         // Forza al eje vertical a usar números enteros 
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        //Rotar numero a 45 grados
+        CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+        
+        
         // Envia el grafico envuelto dentro de un contenedor swing
         return new ChartPanel(chart);
     }

@@ -89,10 +89,10 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Año:");
 
-        btn_refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/Refresh (1).png"))); // NOI18N
+        btn_refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/Refresh (1).png"))); // NOI18N
         btn_refresh.addActionListener(this::btn_refreshActionPerformed);
 
-        btn_Graficar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/grafico.png"))); // NOI18N
+        btn_Graficar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/grafico.png"))); // NOI18N
         btn_Graficar.addActionListener(this::btn_GraficarActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -137,6 +137,7 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
         );
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Reporte Ganancias");
 
