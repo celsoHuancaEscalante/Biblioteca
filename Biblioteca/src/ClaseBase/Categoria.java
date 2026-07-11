@@ -10,6 +10,15 @@ public class Categoria implements Mostrar{
     private double multaPorDia;
     private double garantia;
 
+    public Categoria(int idCategoria, String nombre) {
+        this.idCategoria = idCategoria;
+        this.nombre = nombre;
+        this.precioPrestamo = 0;
+        this.diasMaximos = 0;
+        this.multaPorDia = 0;
+        this.garantia = 0;
+    }
+    
     public Categoria(int idCategoria, String nombre, double precioPrestamo, int diasMaximos, double multaPorDia, double garantia) {
         this.idCategoria = idCategoria;
         this.nombre = nombre;

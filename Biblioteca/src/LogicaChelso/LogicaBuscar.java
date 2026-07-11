@@ -43,9 +43,6 @@ public class LogicaBuscar {
         List<Libro> libros = libroAD.obtenerTodos();
         
         for (Libro libro : libros) {
-            int disponibles = ejemplarAD.contarDisponibles(libro.getIdLibro());
-            String estado = disponibles > 0 ? "Disponible" : "No Disponible";
-            
             Object[] fila = {
                 libro.getIdLibro(),
                 libro.getTitulo(),
@@ -53,7 +50,7 @@ public class LogicaBuscar {
                 libro.getEditorial().getNombre(),
                 libro.getGenero().getNombre(),
                 libro.getStock(),
-                estado
+                libro.getCategoria().getNombre()
             };
             filas.add(fila);
         }
@@ -70,8 +67,6 @@ public class LogicaBuscar {
         List<Libro> libros = libroAD.buscarPorTitulo(titulo);
         
         for (Libro libro : libros) {
-            int disponibles = ejemplarAD.contarDisponibles(libro.getIdLibro());
-            String estado = disponibles > 0 ? "Disponible" : "No Disponible";
             
             Object[] fila = {
                 libro.getIdLibro(),
@@ -80,7 +75,7 @@ public class LogicaBuscar {
                 libro.getEditorial().getNombre(),
                 libro.getGenero().getNombre(),
                 libro.getStock(),
-                estado
+                libro.getCategoria().getNombre()
             };
             filas.add(fila);
         }
@@ -114,8 +109,6 @@ public class LogicaBuscar {
         List<Libro> libros = libroAD.filtrar(genero, autor);
         
         for (Libro libro : libros) {
-            int disponibles = ejemplarAD.contarDisponibles(libro.getIdLibro());
-            String estado = disponibles > 0 ? "Disponible" : "No Disponible";
             
             Object[] fila = {
                 libro.getIdLibro(),
@@ -124,7 +117,7 @@ public class LogicaBuscar {
                 libro.getEditorial().getNombre(),
                 libro.getGenero().getNombre(),
                 libro.getStock(),
-                estado
+                libro.getCategoria().getNombre()
             };
             filas.add(fila);
         }

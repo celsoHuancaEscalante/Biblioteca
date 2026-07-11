@@ -8,17 +8,15 @@ import java.util.*;
 
 public class LibroAD {
     
+    private GeneroAD generoAD = new GeneroAD();
+    private AutorAD autorAD = new AutorAD();
+    private EditorialAD editorialAD = new EditorialAD();
+    private CategoriaAD categoriaAD = new CategoriaAD();
+    
     public List<Libro> obtenerTodos() {
         List<Libro> libros = new ArrayList<>();
-        String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
-                     "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
-                     "e.idEditorial, e.nombre AS editorial_nombre, " +
-                     "g.idGenero, g.nombre AS genero_nombre " +
-                     "FROM libro l " +
-                     "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
-                     "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
-                     "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
-                     "ORDER BY l.titulo";
+        String sql = "SELECT idLibro, idGenero, idAutor, idEditorial, titulo, stock, anioPublicacion, idCategoria FROM libro";
+
         
         try (Connection conn = ConnectMySQL.conn();
              Statement stmt = conn.createStatement();
@@ -33,6 +31,11 @@ public class LibroAD {
                     rs.getString("segundoApellido")
                 );
                 
+                Categoria categoria = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 Editorial editorial = new Editorial(
                     rs.getInt("idEditorial"),
                     rs.getString("editorial_nombre")
@@ -45,7 +48,7 @@ public class LibroAD {
                 
                 Libro libro = new Libro(
                     rs.getInt("idLibro"),
-                    
+                    categoria,
                     genero,
                     autor,
                     editorial,
@@ -92,6 +95,11 @@ public class LibroAD {
                     rs.getString("segundoApellido")
                 );
                 
+                Categoria categoria = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 Editorial editorial = new Editorial(
                     rs.getInt("idEditorial"),
                     rs.getString("editorial_nombre")
@@ -104,6 +112,7 @@ public class LibroAD {
                 
                 Libro libro = new Libro(
                     rs.getInt("idLibro"),
+                    categoria,
                     genero,
                     autor,
                     editorial,
@@ -160,6 +169,11 @@ public class LibroAD {
                     rs.getString("segundoApellido")
                 );
                 
+                Categoria c = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 Editorial e = new Editorial(
                     rs.getInt("idEditorial"),
                     rs.getString("editorial_nombre")
@@ -172,6 +186,7 @@ public class LibroAD {
                 
                 Libro libro = new Libro(
                     rs.getInt("idLibro"),
+                    c,
                     g,
                     a,
                     e,
@@ -191,28 +206,28 @@ public class LibroAD {
     
 
     public int insertar(Libro libro) {
-        String sql = "INSERT INTO libro (titulo, idAutor, idEditorial, idGenero, " +
-                     "anioPublicacion, stock) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO libro (idGenero, idAutor, idEditorial, titulo, stock, anioPublicacion, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            pstmt.setString(1, libro.getTitulo());
-            pstmt.setInt(2, libro.getAutor().getIdAutor());
-            pstmt.setInt(3, libro.getEditorial().getIdEditorial());
-            pstmt.setInt(4, libro.getGenero().getIdGenero());
-            pstmt.setInt(5, libro.getAnioPublicacion());
-            pstmt.setInt(6, libro.getStock());
+            pstmt.setInt(1, libro.getGenero().getIdGenero());
+        pstmt.setInt(2, libro.getAutor().getIdAutor());
+        pstmt.setInt(3, libro.getEditorial().getIdEditorial());
+        pstmt.setString(4, libro.getTitulo());
+        pstmt.setInt(5, libro.getStock());
+        pstmt.setInt(6, libro.getAnioPublicacion());
+        pstmt.setInt(7, libro.getCategoria().getIdCategoria());
             
             int filasAfectadas = pstmt.executeUpdate();
             
             if (filasAfectadas > 0) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        return generatedKeys.getInt(1);
-                    }
-                }
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
             }
+        }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -222,27 +237,29 @@ public class LibroAD {
     
 
     public boolean actualizar(Libro libro) {
-        String sql = "UPDATE libro SET titulo = ?, idAutor = ?, idEditorial = ?, " +
-                     "idGenero = ?, anioPublicacion = ?, stock = ? WHERE idLibro = ?";
+            String sql = "UPDATE libro SET idGenero=?, idAutor=?, idEditorial=?, titulo=?, stock=?, anioPublicacion=?, idCategoria=? WHERE idLibro=?";
+
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setString(1, libro.getTitulo());
+            pstmt.setInt(1, libro.getGenero().getIdGenero());
             pstmt.setInt(2, libro.getAutor().getIdAutor());
             pstmt.setInt(3, libro.getEditorial().getIdEditorial());
-            pstmt.setInt(4, libro.getGenero().getIdGenero());
-            pstmt.setInt(5, libro.getAnioPublicacion());
-            pstmt.setInt(6, libro.getStock());
-            pstmt.setInt(7, libro.getIdLibro());
+            pstmt.setString(4, libro.getTitulo());
+            pstmt.setInt(5, libro.getStock());
+            pstmt.setInt(6, libro.getAnioPublicacion());
+            pstmt.setInt(7, libro.getCategoria().getIdCategoria());
+            pstmt.setInt(8, libro.getIdLibro());
             
             int filasAfectadas = pstmt.executeUpdate();
             return filasAfectadas > 0;
             
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
-            return false;
+            
         }
+        return false;
     }
     
 
@@ -289,6 +306,11 @@ public class LibroAD {
                     rs.getString("segundoApellido")
                 );
                 
+                Categoria categoria = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 Editorial editorial = new Editorial(
                     rs.getInt("idEditorial"),
                     rs.getString("editorial_nombre")
@@ -301,6 +323,7 @@ public class LibroAD {
                 
                 return new Libro(
                     rs.getInt("idLibro"),
+                    categoria,
                     genero,
                     autor,
                     editorial,
