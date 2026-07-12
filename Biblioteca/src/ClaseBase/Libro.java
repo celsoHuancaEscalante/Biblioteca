@@ -5,19 +5,23 @@ public class Libro implements Mostrar{
    private Genero genero;
    private Autor autor;
    private Editorial editorial;
+   private Categoria categoria;
    private String titulo;
-   private int anioPublicacion;
    private int stock;
+   private int anioPublicacion;
 
-    public Libro(int idLibro, Genero genero, Autor autor, Editorial editorial, String titulo, int stock, int anioPublicacion) {
+    public Libro(int idLibro, Genero genero, Autor autor, Editorial editorial, String titulo, int stock, int anioPublicacion, Categoria categoria) {
         this.idLibro = idLibro;
         this.genero = genero;
         this.autor = autor;
         this.editorial = editorial;
+        this.categoria = categoria;
         this.titulo = titulo;
         this.stock = stock;
         this.anioPublicacion = anioPublicacion;
     }
+
+    
 
     public int getIdLibro() {
         return idLibro;
@@ -51,6 +55,14 @@ public class Libro implements Mostrar{
         this.editorial = editorial;
     }
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
     public String getTitulo() {
         return titulo;
     }
@@ -75,6 +87,7 @@ public class Libro implements Mostrar{
         this.anioPublicacion = anioPublicacion;
     }
 
+    
     @Override
     public String mostrarDatos() {
         return titulo;

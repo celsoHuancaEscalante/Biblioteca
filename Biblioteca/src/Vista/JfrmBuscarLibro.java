@@ -39,7 +39,7 @@ public class JfrmBuscarLibro extends javax.swing.JFrame {
     
     private void inicializarTabla() {
     modeloTabla = new DefaultTableModel(
-        new String[]{"ID", "Título", "Autor", "Editorial", "Género", "Unidades", "Estado"},
+        new String[]{"ID", "Título", "Autor", "Editorial", "Género", "Unidades", "Categoría"},
         0
     ) {
         @Override

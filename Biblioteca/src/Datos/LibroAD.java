@@ -13,11 +13,13 @@ public class LibroAD {
         String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
                      "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
-                     "g.idGenero, g.nombre AS genero_nombre " +
+                     "g.idGenero, g.nombre AS genero_nombre, " +
+                     "c.idCategoria, c.nombre AS categoria_nombre " +
                      "FROM libro l " +
                      "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
                      "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
                      "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
+                     "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
                      "ORDER BY l.titulo";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -43,14 +45,20 @@ public class LibroAD {
                     rs.getString("genero_nombre")
                 );
                 
-                Libro libro = new Libro(
+                Categoria categoria = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
+                Libro libro=new Libro(
                     rs.getInt("idLibro"),
                     genero,
                     autor,
                     editorial,
                     rs.getString("titulo"),
                     rs.getInt("stock"),
-                    rs.getInt("anioPublicacion")
+                    rs.getInt("anioPublicacion"),
+                    categoria
                 );
                 
                 libros.add(libro);
@@ -68,11 +76,13 @@ public class LibroAD {
         String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
                      "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
-                     "g.idGenero, g.nombre AS genero_nombre " +
+                     "g.idGenero, g.nombre AS genero_nombre, " +
+                     "c.idCategoria, c.nombre AS categoria_nombre " +
                      "FROM libro l " +
                      "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
                      "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
                      "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
+                     "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
                      "WHERE l.titulo LIKE ? " +
                      "ORDER BY l.titulo";
         
@@ -101,6 +111,11 @@ public class LibroAD {
                     rs.getString("genero_nombre")
                 );
                 
+                Categoria categoria = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 Libro libro = new Libro(
                     rs.getInt("idLibro"),
                     genero,
@@ -108,7 +123,8 @@ public class LibroAD {
                     editorial,
                     rs.getString("titulo"),
                     rs.getInt("stock"),
-                    rs.getInt("anioPublicacion")
+                    rs.getInt("anioPublicacion"),
+                    categoria
                 );
                 
                 libros.add(libro);
@@ -128,11 +144,13 @@ public class LibroAD {
             "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
             "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
             "e.idEditorial, e.nombre AS editorial_nombre, " +
-            "g.idGenero, g.nombre AS genero_nombre " +
+            "g.idGenero, g.nombre AS genero_nombre, " +
+            "c.idCategoria, c.nombre AS categoria_nombre " +
             "FROM libro l " +
             "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
             "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
             "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
+            "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
             "WHERE 1=1 "
         );
         
@@ -169,6 +187,11 @@ public class LibroAD {
                     rs.getString("genero_nombre")
                 );
                 
+                Categoria c = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 Libro libro = new Libro(
                     rs.getInt("idLibro"),
                     g,
@@ -176,7 +199,8 @@ public class LibroAD {
                     e,
                     rs.getString("titulo"),
                     rs.getInt("stock"),
-                    rs.getInt("anioPublicacion")
+                    rs.getInt("anioPublicacion"),
+                    c
                 );
                 
                 libros.add(libro);
@@ -191,7 +215,7 @@ public class LibroAD {
 
     public int insertar(Libro libro) {
         String sql = "INSERT INTO libro (titulo, idAutor, idEditorial, idGenero, " +
-                     "anioPublicacion, stock) VALUES (?, ?, ?, ?, ?, ?)";
+                     "anioPublicacion, stock, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -202,6 +226,7 @@ public class LibroAD {
             pstmt.setInt(4, libro.getGenero().getIdGenero());
             pstmt.setInt(5, libro.getAnioPublicacion());
             pstmt.setInt(6, libro.getStock());
+            pstmt.setInt(7, libro.getCategoria().getIdCategoria());
             
             int filasAfectadas = pstmt.executeUpdate();
             
@@ -222,7 +247,7 @@ public class LibroAD {
 
     public boolean actualizar(Libro libro) {
         String sql = "UPDATE libro SET titulo = ?, idAutor = ?, idEditorial = ?, " +
-                     "idGenero = ?, anioPublicacion = ?, stock = ? WHERE idLibro = ?";
+                     "idGenero = ?, anioPublicacion = ?, stock = ?, idCategoria = ? WHERE idLibro = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -233,7 +258,8 @@ public class LibroAD {
             pstmt.setInt(4, libro.getGenero().getIdGenero());
             pstmt.setInt(5, libro.getAnioPublicacion());
             pstmt.setInt(6, libro.getStock());
-            pstmt.setInt(7, libro.getIdLibro());
+            pstmt.setInt(7, libro.getCategoria().getIdCategoria());
+            pstmt.setInt(8, libro.getIdLibro());
             
             int filasAfectadas = pstmt.executeUpdate();
             return filasAfectadas > 0;
@@ -266,11 +292,13 @@ public class LibroAD {
         String sql = "SELECT l.idLibro, l.titulo, l.anioPublicacion, l.stock, " +
                      "a.idAutor, a.primerNombre, a.segundoNombre, a.primerApellido, a.segundoApellido, " +
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
-                     "g.idGenero, g.nombre AS genero_nombre " +
+                     "g.idGenero, g.nombre AS genero_nombre, " +
+                     "c.idCategoria, c.nombre AS categoria_nombre " +
                      "FROM libro l " +
                      "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
                      "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
                      "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
+                     "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
                      "WHERE l.idLibro = ?";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -298,6 +326,11 @@ public class LibroAD {
                     rs.getString("genero_nombre")
                 );
                 
+                Categoria categoria = new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("categoria_nombre")
+                );
+                
                 return new Libro(
                     rs.getInt("idLibro"),
                     genero,
@@ -305,7 +338,8 @@ public class LibroAD {
                     editorial,
                     rs.getString("titulo"),
                     rs.getInt("stock"),
-                    rs.getInt("anioPublicacion")
+                    rs.getInt("anioPublicacion"),
+                    categoria
                 );
             }
         } catch (SQLException e) {
