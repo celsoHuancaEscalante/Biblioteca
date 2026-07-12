@@ -1,38 +1,37 @@
-package VistaJoshuar;
+package Vista_Prestamos_Jhosuar;
 
-//Actualización 1.1...
+import ClaseBase.Cliente;
+import ClaseBase.Prestamo;
+import Datos_Prestamos_Jhosuar.DatosSQL;
+import Modelo_Prestamos_Jhosuar.Prestamos_Tabla;
 
 import com.toedter.calendar.JCalendar;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 import javax.swing.JDialog;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-//Buscar//
-
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
-//SQL//
-
-import ConnectXampp.ConnectMySQL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 
+    // FrmPrestamos_Jhosuar//
+    // V1.2 //
 
 public class FrmPrestamos extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmPrestamos.class.getName());
     
     private Date fechaEntregaSeleccionada;
+    private DatosSQL prestamos_Datos = new DatosSQL();
     
 private boolean modoEdicion = false;
 private int filaEditando = -1;
@@ -369,7 +368,7 @@ private final int COL_MULTA = 7;
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCalendarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalendarioActionPerformed
-
+        
     JDialog dialogoCalendario = new JDialog(this, "Seleccionar fecha de entrega", true);
     dialogoCalendario.setSize(400, 350);
     dialogoCalendario.setLocationRelativeTo(this);
@@ -426,7 +425,27 @@ private final int COL_MULTA = 7;
         return;
     }
 
-    registrarPrestamoBD(dni, idLibro, fechaEntregaSeleccionada);
+    Cliente cliente = new Cliente();
+    cliente.setDni(dni);
+
+    LocalDate fechaEntrega = fechaEntregaSeleccionada
+            .toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+
+    Prestamo prestamo = new Prestamo();
+    prestamo.setCliente(cliente);
+
+    // Usamos fechaVencimiento como fecha de entrega porque no modificamos ClaseBase.
+    prestamo.setFechaVencimiento(fechaEntrega);
+
+    boolean registrado = prestamos_Datos.registrarPrestamo(prestamo, idLibro);
+
+    JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+
+    if (registrado) {
+        cargarPrestamos();
+        limpiarCampos(); }
 
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
@@ -435,7 +454,6 @@ private final int COL_MULTA = 7;
     }//GEN-LAST:event_TblPrestamosAncestorAdded
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-
 
     int fila = TblPrestamos.getSelectedRow();
 
@@ -447,18 +465,25 @@ private final int COL_MULTA = 7;
     int idPrestamo = Integer.parseInt(TblPrestamos.getValueAt(fila, COL_ID).toString());
 
     int confirmacion = JOptionPane.showConfirmDialog(
-        this,
-        "¿Está seguro de eliminar este préstamo?",
-        "Confirmar eliminación",
-        JOptionPane.YES_NO_OPTION
+            this,
+            "¿Está seguro de eliminar este préstamo?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION
     );
 
     if (confirmacion != JOptionPane.YES_OPTION) {
         return;
     }
 
-    eliminarPrestamoBD(idPrestamo);
+    boolean eliminado = prestamos_Datos.eliminarPrestamo(idPrestamo);
 
+    JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+
+    if (eliminado) {
+        modoEdicion = false;
+        filaEditando = -1;
+        cargarPrestamos();
+    }
 
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -483,9 +508,11 @@ private final int COL_MULTA = 7;
     );
 
     TblPrestamos.editCellAt(fila, COL_DNI);
+
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+
     if (!modoEdicion || filaEditando == -1) {
         JOptionPane.showMessageDialog(this, "No hay ninguna fila en edición.");
         return;
@@ -508,22 +535,43 @@ private final int COL_MULTA = 7;
         return;
     }
 
-    java.sql.Date fechaEntregaSQL;
+    LocalDate fechaEntregaNueva;
 
-    if (valorFechaEntrega instanceof java.sql.Date) {
-        fechaEntregaSQL = (java.sql.Date) valorFechaEntrega;
+    if (valorFechaEntrega instanceof LocalDate) {
+        fechaEntregaNueva = (LocalDate) valorFechaEntrega;
+
+    } else if (valorFechaEntrega instanceof java.sql.Date) {
+        fechaEntregaNueva = ((java.sql.Date) valorFechaEntrega).toLocalDate();
+
     } else if (valorFechaEntrega instanceof java.util.Date) {
-        fechaEntregaSQL = new java.sql.Date(((java.util.Date) valorFechaEntrega).getTime());
+        fechaEntregaNueva = ((java.util.Date) valorFechaEntrega)
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
     } else {
         try {
-            fechaEntregaSQL = java.sql.Date.valueOf(valorFechaEntrega.toString());
+            fechaEntregaNueva = java.sql.Date.valueOf(valorFechaEntrega.toString()).toLocalDate();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Fecha inválida. Use el calendario para modificarla.");
             return;
         }
     }
 
-    guardarCambiosPrestamo(idPrestamo, dniNuevo, valorLibro.toString().trim(), fechaEntregaSQL);
+    boolean guardado = prestamos_Datos.modificarPrestamo(
+            idPrestamo,
+            dniNuevo,
+            valorLibro.toString().trim(),
+            fechaEntregaNueva
+    );
+
+    JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+
+    if (guardado) {
+        modoEdicion = false;
+        filaEditando = -1;
+        cargarPrestamos();
+    }
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 
@@ -540,6 +588,7 @@ private final int COL_MULTA = 7;
 
     }//GEN-LAST:event_btnRegistrar1ActionPerformed
 
+    //METODOSUSADOS//
 
 private void configurarTabla() {
 
@@ -584,52 +633,23 @@ private void cargarPrestamos() {
     DefaultTableModel modelo = (DefaultTableModel) TblPrestamos.getModel();
     modelo.setRowCount(0);
 
-    String sql =
-        "SELECT " +
-        "p.id_prestamo AS id, " +
-        "c.dni AS dni, " +
-        "CONCAT(c.nombres, ' ', c.apellidos) AS usuario, " +
-        "l.titulo AS libro, " +
-        "p.fecha_prestamo AS fecha_prestamo, " +
-        "p.fecha_entrega AS fecha_entrega, " +
-        "CASE " +
-        "   WHEN p.fecha_devolucion IS NOT NULL THEN 'Devuelto' " +
-        "   WHEN CURDATE() > p.fecha_entrega THEN 'Atrasado' " +
-        "   ELSE 'Prestado' " +
-        "END AS estado_prestamo, " +
-        "CASE " +
-        "   WHEN p.fecha_devolucion IS NULL AND CURDATE() > p.fecha_entrega " +
-        "   THEN DATEDIFF(CURDATE(), p.fecha_entrega) * dp.multa_diaria " +
-        "   WHEN p.fecha_devolucion IS NOT NULL AND p.fecha_devolucion > p.fecha_entrega " +
-        "   THEN DATEDIFF(p.fecha_devolucion, p.fecha_entrega) * dp.multa_diaria " +
-        "   ELSE 0 " +
-        "END AS multa_acumulada " +
-        "FROM prestamos p " +
-        "INNER JOIN clientes c ON p.dni_cliente = c.dni " +
-        "INNER JOIN detalle_prestamo dp ON p.id_prestamo = dp.id_prestamo " +
-        "INNER JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar " +
-        "INNER JOIN libros l ON e.id_libro = l.id_libro " +
-        "ORDER BY p.id_prestamo DESC";
+    ArrayList<Prestamos_Tabla> lista = prestamos_Datos.listarPrestamos();
 
-    try (Connection conn = ConnectMySQL.conn();
-         PreparedStatement pst = conn.prepareStatement(sql);
-         ResultSet rs = pst.executeQuery()) {
+    for (Prestamos_Tabla p : lista) {
+        modelo.addRow(new Object[]{
+            p.getIdPrestamo(),
+            p.getDni(),
+            p.getUsuario(),
+            p.getLibro(),
+            p.getFechaPrestamo(),
+            p.getFechaEntrega(),
+            p.getEstadoPrestamo(),
+            "S/ " + p.getMultaAcumulada()
+        });
+    }
 
-        while (rs.next()) {
-            modelo.addRow(new Object[]{
-                rs.getInt("id"),
-                rs.getString("dni"),
-                rs.getString("usuario"),
-                rs.getString("libro"),
-                rs.getDate("fecha_prestamo"),
-                rs.getDate("fecha_entrega"),
-                rs.getString("estado_prestamo"),
-                "S/ " + rs.getDouble("multa_acumulada")
-            });
-        }
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error al cargar préstamos: " + e.getMessage());
+    if (lista.isEmpty() && prestamos_Datos.getMensaje() != null) {
+        JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
     }
 }
 
@@ -685,366 +705,6 @@ private void limpiarCampos() {
     fechaEntregaSeleccionada = null;
 }
 
-private void guardarCambiosPrestamo(int idPrestamo, String dniNuevo, String valorLibro, java.sql.Date fechaEntregaNueva) {
-
-    Connection conn = ConnectMySQL.conn();
-
-    if (conn == null) {
-        JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos.");
-        return;
-    }
-
-    try {
-        conn.setAutoCommit(false);
-
-        // 1. Validar DNI
-        String sqlCliente = "SELECT CONCAT(nombres, ' ', apellidos) AS usuario FROM clientes WHERE dni = ?";
-        PreparedStatement pstCliente = conn.prepareStatement(sqlCliente);
-        pstCliente.setString(1, dniNuevo);
-        ResultSet rsCliente = pstCliente.executeQuery();
-
-        if (!rsCliente.next()) {
-            JOptionPane.showMessageDialog(this, "El DNI ingresado no existe.");
-            conn.rollback();
-            return;
-        }
-
-        // 2. Obtener ejemplar actual del préstamo
-        String sqlActual =
-            "SELECT dp.id_ejemplar, e.id_libro " +
-            "FROM detalle_prestamo dp " +
-            "INNER JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar " +
-            "WHERE dp.id_prestamo = ?";
-
-        PreparedStatement pstActual = conn.prepareStatement(sqlActual);
-        pstActual.setInt(1, idPrestamo);
-        ResultSet rsActual = pstActual.executeQuery();
-
-        if (!rsActual.next()) {
-            JOptionPane.showMessageDialog(this, "No se encontró el detalle del préstamo.");
-            conn.rollback();
-            return;
-        }
-
-        int idEjemplarActual = rsActual.getInt("id_ejemplar");
-        int idLibroActual = rsActual.getInt("id_libro");
-
-        int idLibroNuevo = idLibroActual;
-        boolean cambiarLibro = false;
-
-        // Si el valor en la columna LIBRO es numérico, se interpreta como código de libro.
-        try {
-            idLibroNuevo = Integer.parseInt(valorLibro);
-            cambiarLibro = idLibroNuevo != idLibroActual;
-        } catch (NumberFormatException e) {
-            cambiarLibro = false;
-        }
-
-        // 3. Actualizar préstamo: DNI y fecha de entrega
-        String sqlUpdatePrestamo =
-            "UPDATE prestamos SET dni_cliente = ?, fecha_entrega = ? WHERE id_prestamo = ?";
-
-        PreparedStatement pstUpdatePrestamo = conn.prepareStatement(sqlUpdatePrestamo);
-        pstUpdatePrestamo.setString(1, dniNuevo);
-        pstUpdatePrestamo.setDate(2, fechaEntregaNueva);
-        pstUpdatePrestamo.setInt(3, idPrestamo);
-        pstUpdatePrestamo.executeUpdate();
-
-        // 4. Si cambió el libro, buscar ejemplar disponible
-        if (cambiarLibro) {
-
-            String sqlDisponible =
-                "SELECT e.id_ejemplar, c.dias_prestamo, c.costo_reposicion, c.multa_diaria " +
-                "FROM ejemplares e " +
-                "INNER JOIN libros l ON e.id_libro = l.id_libro " +
-                "INNER JOIN categorias c ON l.id_categoria = c.id_categoria " +
-                "WHERE e.id_libro = ? AND e.estado = 'Disponible' " +
-                "LIMIT 1";
-
-            PreparedStatement pstDisponible = conn.prepareStatement(sqlDisponible);
-            pstDisponible.setInt(1, idLibroNuevo);
-            ResultSet rsDisponible = pstDisponible.executeQuery();
-
-            if (!rsDisponible.next()) {
-
-                String estado = obtenerEstadoLibro(conn, idLibroNuevo);
-
-                JOptionPane.showMessageDialog(this, "El libro está en estado: " + estado);
-
-                conn.rollback();
-                return;
-            }
-
-            int idEjemplarNuevo = rsDisponible.getInt("id_ejemplar");
-            int diasPrestamo = rsDisponible.getInt("dias_prestamo");
-            double costoReposicion = rsDisponible.getDouble("costo_reposicion");
-            double multaDiaria = rsDisponible.getDouble("multa_diaria");
-
-            // Liberar ejemplar anterior
-            String sqlLiberar =
-                "UPDATE ejemplares SET estado = 'Disponible' WHERE id_ejemplar = ?";
-
-            PreparedStatement pstLiberar = conn.prepareStatement(sqlLiberar);
-            pstLiberar.setInt(1, idEjemplarActual);
-            pstLiberar.executeUpdate();
-
-            // Ocupar nuevo ejemplar
-            String sqlOcupar =
-                "UPDATE ejemplares SET estado = 'Prestado' WHERE id_ejemplar = ?";
-
-            PreparedStatement pstOcupar = conn.prepareStatement(sqlOcupar);
-            pstOcupar.setInt(1, idEjemplarNuevo);
-            pstOcupar.executeUpdate();
-
-            // Actualizar detalle del préstamo
-            String sqlUpdateDetalle =
-                "UPDATE detalle_prestamo " +
-                "SET id_ejemplar = ?, dias_prestamo = ?, costo_reposicion = ?, multa_diaria = ? " +
-                "WHERE id_prestamo = ?";
-
-            PreparedStatement pstUpdateDetalle = conn.prepareStatement(sqlUpdateDetalle);
-            pstUpdateDetalle.setInt(1, idEjemplarNuevo);
-            pstUpdateDetalle.setInt(2, diasPrestamo);
-            pstUpdateDetalle.setDouble(3, costoReposicion);
-            pstUpdateDetalle.setDouble(4, multaDiaria);
-            pstUpdateDetalle.setInt(5, idPrestamo);
-            pstUpdateDetalle.executeUpdate();
-        }
-
-        conn.commit();
-
-        JOptionPane.showMessageDialog(this, "Cambios guardados correctamente.");
-
-        modoEdicion = false;
-        filaEditando = -1;
-
-        cargarPrestamos();
-
-    } catch (SQLException e) {
-        try {
-            conn.rollback();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        JOptionPane.showMessageDialog(this, "Error al guardar cambios: " + e.getMessage());
-
-    } finally {
-        try {
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-private void registrarPrestamoBD(String dni, int idLibro, Date fechaEntrega) {
-
-    Connection conn = ConnectMySQL.conn();
-
-    if (conn == null) {
-        JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos.");
-        return;
-    }
-
-    try {
-        conn.setAutoCommit(false);
-
-        String sqlCliente = "SELECT dni FROM clientes WHERE dni = ?";
-        PreparedStatement pstCliente = conn.prepareStatement(sqlCliente);
-        pstCliente.setString(1, dni);
-        ResultSet rsCliente = pstCliente.executeQuery();
-
-        if (!rsCliente.next()) {
-            JOptionPane.showMessageDialog(this, "El DNI ingresado no existe.");
-            conn.rollback();
-            return;
-        }
-
-        String sqlEjemplar =
-            "SELECT e.id_ejemplar, c.dias_prestamo, c.costo_reposicion, c.multa_diaria " +
-            "FROM ejemplares e " +
-            "INNER JOIN libros l ON e.id_libro = l.id_libro " +
-            "INNER JOIN categorias c ON l.id_categoria = c.id_categoria " +
-            "WHERE l.id_libro = ? AND e.estado = 'Disponible' " +
-            "LIMIT 1";
-
-        PreparedStatement pstEjemplar = conn.prepareStatement(sqlEjemplar);
-        pstEjemplar.setInt(1, idLibro);
-        ResultSet rsEjemplar = pstEjemplar.executeQuery();
-
-        if (!rsEjemplar.next()) {
-            JOptionPane.showMessageDialog(this, "No hay ejemplares disponibles para este libro.");
-            conn.rollback();
-            return;
-        }
-
-        int idEjemplar = rsEjemplar.getInt("id_ejemplar");
-        int diasPrestamo = rsEjemplar.getInt("dias_prestamo");
-        double costoReposicion = rsEjemplar.getDouble("costo_reposicion");
-        double multaDiaria = rsEjemplar.getDouble("multa_diaria");
-
-        String sqlPrestamo =
-            "INSERT INTO prestamos " +
-            "(dni_cliente, fecha_prestamo, fecha_devolucion, fecha_entrega) " +
-            "VALUES (?, CURDATE(), NULL, ?)";
-
-        PreparedStatement pstPrestamo = conn.prepareStatement(sqlPrestamo, Statement.RETURN_GENERATED_KEYS);
-        pstPrestamo.setString(1, dni);
-        pstPrestamo.setDate(2, new java.sql.Date(fechaEntrega.getTime()));
-        pstPrestamo.executeUpdate();
-
-        ResultSet rsKey = pstPrestamo.getGeneratedKeys();
-
-        int idPrestamo;
-
-        if (rsKey.next()) {
-            idPrestamo = rsKey.getInt(1);
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo generar el ID del préstamo.");
-            conn.rollback();
-            return;
-        }
-
-        String sqlDetalle =
-            "INSERT INTO detalle_prestamo " +
-            "(id_ejemplar, id_prestamo, dias_prestamo, costo_reposicion, multa_diaria) " +
-            "VALUES (?, ?, ?, ?, ?)";
-
-        PreparedStatement pstDetalle = conn.prepareStatement(sqlDetalle);
-        pstDetalle.setInt(1, idEjemplar);
-        pstDetalle.setInt(2, idPrestamo);
-        pstDetalle.setInt(3, diasPrestamo);
-        pstDetalle.setDouble(4, costoReposicion);
-        pstDetalle.setDouble(5, multaDiaria);
-        pstDetalle.executeUpdate();
-
-        String sqlActualizarEjemplar =
-            "UPDATE ejemplares SET estado = 'Prestado' WHERE id_ejemplar = ?";
-
-        PreparedStatement pstActualizar = conn.prepareStatement(sqlActualizarEjemplar);
-        pstActualizar.setInt(1, idEjemplar);
-        pstActualizar.executeUpdate();
-
-        conn.commit();
-
-        JOptionPane.showMessageDialog(this, "Préstamo registrado correctamente. ID: " + idPrestamo);
-
-        cargarPrestamos();
-        limpiarCampos();
-
-    } catch (SQLException e) {
-        try {
-            conn.rollback();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        JOptionPane.showMessageDialog(this, "Error al registrar préstamo: " + e.getMessage());
-
-    } finally {
-        try {
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-private void eliminarPrestamoBD(int idPrestamo) {
-
-    Connection conn = ConnectMySQL.conn();
-
-    if (conn == null) {
-        JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos.");
-        return;
-    }
-
-    try {
-        conn.setAutoCommit(false);
-
-        String sqlEjemplar =
-            "SELECT id_ejemplar FROM detalle_prestamo WHERE id_prestamo = ?";
-
-        PreparedStatement pstEjemplar = conn.prepareStatement(sqlEjemplar);
-        pstEjemplar.setInt(1, idPrestamo);
-        ResultSet rsEjemplar = pstEjemplar.executeQuery();
-
-        int idEjemplar = -1;
-
-        if (rsEjemplar.next()) {
-            idEjemplar = rsEjemplar.getInt("id_ejemplar");
-        }
-
-        String sqlDetalle =
-            "DELETE FROM detalle_prestamo WHERE id_prestamo = ?";
-
-        PreparedStatement pstDetalle = conn.prepareStatement(sqlDetalle);
-        pstDetalle.setInt(1, idPrestamo);
-        pstDetalle.executeUpdate();
-
-        String sqlPrestamo =
-            "DELETE FROM prestamos WHERE id_prestamo = ?";
-
-        PreparedStatement pstPrestamo = conn.prepareStatement(sqlPrestamo);
-        pstPrestamo.setInt(1, idPrestamo);
-        pstPrestamo.executeUpdate();
-
-        if (idEjemplar != -1) {
-            String sqlLiberar =
-                "UPDATE ejemplares SET estado = 'Disponible' WHERE id_ejemplar = ?";
-
-            PreparedStatement pstLiberar = conn.prepareStatement(sqlLiberar);
-            pstLiberar.setInt(1, idEjemplar);
-            pstLiberar.executeUpdate();
-        }
-
-        conn.commit();
-
-        JOptionPane.showMessageDialog(this, "Préstamo eliminado correctamente.");
-
-        modoEdicion = false;
-        filaEditando = -1;
-
-        cargarPrestamos();
-
-    } catch (SQLException e) {
-        try {
-            conn.rollback();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        JOptionPane.showMessageDialog(this, "Error al eliminar préstamo: " + e.getMessage());
-
-    } finally {
-        try {
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-private String obtenerEstadoLibro(Connection conn, int idLibro) throws SQLException {
-
-    String sql =
-        "SELECT estado FROM ejemplares WHERE id_libro = ? LIMIT 1";
-
-    PreparedStatement pst = conn.prepareStatement(sql);
-    pst.setInt(1, idLibro);
-    ResultSet rs = pst.executeQuery();
-
-    if (rs.next()) {
-        return rs.getString("estado");
-    }
-
-    return "No existe";
-}
-
 private void configurarTxtBuscarDni() {
 
     txtBuscarDni.addFocusListener(new FocusAdapter() {
@@ -1069,64 +729,23 @@ private void cargarPrestamosPorDni(String dniBuscar) {
     DefaultTableModel modelo = (DefaultTableModel) TblPrestamos.getModel();
     modelo.setRowCount(0);
 
-    String sql =
-        "SELECT " +
-        "p.id_prestamo AS id, " +
-        "c.dni AS dni, " +
-        "CONCAT(c.nombres, ' ', c.apellidos) AS usuario, " +
-        "l.titulo AS libro, " +
-        "p.fecha_prestamo AS fecha_prestamo, " +
-        "p.fecha_entrega AS fecha_entrega, " +
-        "CASE " +
-        "   WHEN p.fecha_devolucion IS NOT NULL THEN 'Devuelto' " +
-        "   WHEN CURDATE() > p.fecha_entrega THEN 'Atrasado' " +
-        "   ELSE 'Prestado' " +
-        "END AS estado_prestamo, " +
-        "CASE " +
-        "   WHEN p.fecha_devolucion IS NULL AND CURDATE() > p.fecha_entrega " +
-        "   THEN DATEDIFF(CURDATE(), p.fecha_entrega) * dp.multa_diaria " +
-        "   WHEN p.fecha_devolucion IS NOT NULL AND p.fecha_devolucion > p.fecha_entrega " +
-        "   THEN DATEDIFF(p.fecha_devolucion, p.fecha_entrega) * dp.multa_diaria " +
-        "   ELSE 0 " +
-        "END AS multa_acumulada " +
-        "FROM prestamos p " +
-        "INNER JOIN clientes c ON p.dni_cliente = c.dni " +
-        "INNER JOIN detalle_prestamo dp ON p.id_prestamo = dp.id_prestamo " +
-        "INNER JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar " +
-        "INNER JOIN libros l ON e.id_libro = l.id_libro " +
-        "WHERE c.dni = ? " +
-        "ORDER BY p.id_prestamo DESC";
+    ArrayList<Prestamos_Tabla> lista = prestamos_Datos.buscarPrestamosPorDni(dniBuscar);
 
-    try (Connection conn = ConnectMySQL.conn();
-         PreparedStatement pst = conn.prepareStatement(sql)) {
+    for (Prestamos_Tabla p : lista) {
+        modelo.addRow(new Object[]{
+            p.getIdPrestamo(),
+            p.getDni(),
+            p.getUsuario(),
+            p.getLibro(),
+            p.getFechaPrestamo(),
+            p.getFechaEntrega(),
+            p.getEstadoPrestamo(),
+            "S/ " + p.getMultaAcumulada()
+        });
+    }
 
-        pst.setString(1, dniBuscar);
-
-        ResultSet rs = pst.executeQuery();
-
-        boolean encontro = false;
-
-        while (rs.next()) {
-            encontro = true;
-
-            modelo.addRow(new Object[]{
-                rs.getInt("id"),
-                rs.getString("dni"),
-                rs.getString("usuario"),
-                rs.getString("libro"),
-                rs.getDate("fecha_prestamo"),
-                rs.getDate("fecha_entrega"),
-                rs.getString("estado_prestamo"),
-                "S/ " + rs.getDouble("multa_acumulada")
-            });
-        }
-
-        if (!encontro) {
-            JOptionPane.showMessageDialog(this, "No se encontraron préstamos para el DNI: " + dniBuscar);
-        }
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error al buscar préstamos: " + e.getMessage());
+    if (lista.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "No se encontraron préstamos para el DNI: " + dniBuscar);
     }
 }
 
