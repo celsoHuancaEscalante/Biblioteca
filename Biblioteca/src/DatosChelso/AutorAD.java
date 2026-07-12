@@ -10,7 +10,7 @@ public class AutorAD {
     
     public List<Autor> obtenerTodos() {
         List<Autor> autores = new ArrayList<>();
-        String sql = "SELECT idAutor, primerNombre, segundoNombre, primerApellido, segundoApellido FROM autor";
+        String sql = "SELECT idAutor, primerNombre, segundoNombre, primerApellido, segundoApellido FROM autores";
         
         try (Connection conn = ConnectMySQL.conn();
              Statement stmt = conn.createStatement();
@@ -36,7 +36,7 @@ public class AutorAD {
     public List<Autor> buscarPorNombre(String texto) {
         List<Autor> autores = new ArrayList<>();
         String sql = "SELECT idAutor, primerNombre, segundoNombre, primerApellido, segundoApellido " +
-                     "FROM autor WHERE primerNombre LIKE ? OR segundoNombre LIKE ? OR " +
+                     "FROM autores WHERE primerNombre LIKE ? OR segundoNombre LIKE ? OR " +
                      "primerApellido LIKE ? OR segundoApellido LIKE ?";
                 
         try (Connection conn = ConnectMySQL.conn();
@@ -68,7 +68,7 @@ public class AutorAD {
     
 
     public boolean insertar(Autor autor) {
-        String sql = "INSERT INTO autor (primerNombre, segundoNombre, primerApellido, segundoApellido) " +
+        String sql = "INSERT INTO autores (primerNombre, segundoNombre, primerApellido, segundoApellido) " +
                      "VALUES (?, ?, ?, ?)";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -90,7 +90,7 @@ public class AutorAD {
     
 
     public boolean actualizar(Autor autor) {
-        String sql = "UPDATE autor SET primerNombre = ?, segundoNombre = ?, " +
+        String sql = "UPDATE autores SET primerNombre = ?, segundoNombre = ?, " +
                      "primerApellido = ?, segundoApellido = ? WHERE idAutor = ?";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -113,7 +113,7 @@ public class AutorAD {
     
 
     public boolean eliminar(int idAutor) {
-        String sql = "DELETE FROM autor WHERE idAutor = ?";
+        String sql = "DELETE FROM autores WHERE idAutor = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

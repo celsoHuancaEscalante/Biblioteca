@@ -16,11 +16,11 @@ public class LibroAD {
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
                      "g.idGenero, g.nombre AS genero_nombre, " +
                      "c.idCategoria, c.nombre AS categoria_nombre " +
-                     "FROM libro l " +
-                     "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
-                     "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
-                     "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
-                     "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
+                     "FROM libros l " +
+                     "LEFT JOIN autores a ON l.idAutor = a.idAutor " +
+                     "LEFT JOIN editoriales e ON l.idEditorial = e.idEditorial " +
+                     "LEFT JOIN generos g ON l.idGenero = g.idGenero " +
+                     "LEFT JOIN categorias c ON l.idCategoria = c.idCategoria " +
                      "ORDER BY l.titulo";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -79,11 +79,11 @@ public class LibroAD {
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
                      "g.idGenero, g.nombre AS genero_nombre, " +
                      "c.idCategoria, c.nombre AS categoria_nombre " +
-                     "FROM libro l " +
-                     "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
-                     "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
-                     "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
-                     "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
+                     "FROM libros l " +
+                     "LEFT JOIN autores a ON l.idAutor = a.idAutor " +
+                     "LEFT JOIN editoriales e ON l.idEditorial = e.idEditorial " +
+                     "LEFT JOIN generos g ON l.idGenero = g.idGenero " +
+                     "LEFT JOIN categorias c ON l.idCategoria = c.idCategoria " +
                      "WHERE l.titulo LIKE ? " +
                      "ORDER BY l.titulo";
         
@@ -147,11 +147,11 @@ public class LibroAD {
             "e.idEditorial, e.nombre AS editorial_nombre, " +
             "g.idGenero, g.nombre AS genero_nombre, " +
             "c.idCategoria, c.nombre AS categoria_nombre " +
-            "FROM libro l " +
-            "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
-            "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
-            "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
-            "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
+            "FROM libros l " +
+            "LEFT JOIN autores a ON l.idAutor = a.idAutor " +
+            "LEFT JOIN editoriales e ON l.idEditorial = e.idEditorial " +
+            "LEFT JOIN generos g ON l.idGenero = g.idGenero " +
+            "LEFT JOIN categorias c ON l.idCategoria = c.idCategoria " +
             "WHERE 1=1 "
         );
         
@@ -215,7 +215,7 @@ public class LibroAD {
     
 
     public int insertar(Libro libro) {
-        String sql = "INSERT INTO libro (titulo, idAutor, idEditorial, idGenero, " +
+        String sql = "INSERT INTO libros (titulo, idAutor, idEditorial, idGenero, " +
                      "anioPublicacion, stock, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -247,7 +247,7 @@ public class LibroAD {
     
 
     public boolean actualizar(Libro libro) {
-        String sql = "UPDATE libro SET titulo = ?, idAutor = ?, idEditorial = ?, " +
+        String sql = "UPDATE libros SET titulo = ?, idAutor = ?, idEditorial = ?, " +
                      "idGenero = ?, anioPublicacion = ?, stock = ?, idCategoria = ? WHERE idLibro = ?";
         
         try (Connection conn = ConnectMySQL.conn();
@@ -273,7 +273,7 @@ public class LibroAD {
     
 
     public boolean eliminar(int idLibro) {
-        String sql = "DELETE FROM libro WHERE idLibro = ?";
+        String sql = "DELETE FROM libros WHERE idLibro = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -295,11 +295,11 @@ public class LibroAD {
                      "e.idEditorial, e.nombre AS editorial_nombre, " +
                      "g.idGenero, g.nombre AS genero_nombre, " +
                      "c.idCategoria, c.nombre AS categoria_nombre " +
-                     "FROM libro l " +
-                     "LEFT JOIN autor a ON l.idAutor = a.idAutor " +
-                     "LEFT JOIN editorial e ON l.idEditorial = e.idEditorial " +
-                     "LEFT JOIN genero g ON l.idGenero = g.idGenero " +
-                     "LEFT JOIN categoria c ON l.idCategoria = c.idCategoria " +
+                     "FROM libros l " +
+                     "LEFT JOIN autores a ON l.idAutor = a.idAutor " +
+                     "LEFT JOIN editoriales e ON l.idEditorial = e.idEditorial " +
+                     "LEFT JOIN generos g ON l.idGenero = g.idGenero " +
+                     "LEFT JOIN categorias c ON l.idCategoria = c.idCategoria " +
                      "WHERE l.idLibro = ?";
         
         try (Connection conn = ConnectMySQL.conn();

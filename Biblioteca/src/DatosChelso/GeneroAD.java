@@ -10,7 +10,7 @@ public class GeneroAD {
     
     public List<Genero> obtenerTodos(){
         List<Genero> generos=new ArrayList<>();
-        String sql= "SELECT idGenero, nombre FROM genero";
+        String sql= "SELECT idGenero, nombre FROM generos";
         
         try (Connection conn= ConnectMySQL.conn();
              Statement stmt= conn.createStatement();
@@ -28,7 +28,7 @@ public class GeneroAD {
     }
     public List<Genero> buscarPorNombre(String nombre) {
         List<Genero> generos = new ArrayList<>();
-        String sql = "SELECT idGenero, nombre FROM genero WHERE nombre LIKE ?";
+        String sql = "SELECT idGenero, nombre FROM generos WHERE nombre LIKE ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -51,7 +51,7 @@ public class GeneroAD {
     }
     
     public boolean insertar(Genero genero) {
-        String sql = "INSERT INTO genero (nombre) VALUES (?)";
+        String sql = "INSERT INTO generos (nombre) VALUES (?)";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -67,7 +67,7 @@ public class GeneroAD {
     }
     
     public boolean actualizar(Genero genero) {
-        String sql = "UPDATE genero SET nombre = ? WHERE idGenero = ?";
+        String sql = "UPDATE generos SET nombre = ? WHERE idGenero = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -84,7 +84,7 @@ public class GeneroAD {
     }
     
     public boolean eliminar(int idGenero) {
-        String sql = "DELETE FROM genero WHERE idGenero = ?";
+        String sql = "DELETE FROM generos WHERE idGenero = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

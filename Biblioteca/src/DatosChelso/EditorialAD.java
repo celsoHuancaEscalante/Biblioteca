@@ -11,7 +11,7 @@ public class EditorialAD {
 
 public List<Editorial> obtenerTodos() {
         List<Editorial> editoriales = new ArrayList<>();
-        String sql = "SELECT idEditorial, nombre FROM editorial";
+        String sql = "SELECT idEditorial, nombre FROM editoriales";
         
         try (Connection conn = ConnectMySQL.conn();
              Statement stmt = conn.createStatement();
@@ -34,7 +34,7 @@ public List<Editorial> obtenerTodos() {
 
     public List<Editorial> buscarPorNombre(String nombre) {
         List<Editorial> editoriales = new ArrayList<>();
-        String sql = "SELECT idEditorial, nombre FROM editorial WHERE nombre LIKE ?";
+        String sql = "SELECT idEditorial, nombre FROM editoriales WHERE nombre LIKE ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -58,7 +58,7 @@ public List<Editorial> obtenerTodos() {
     
 
     public boolean insertar(Editorial editorial) {
-        String sql = "INSERT INTO editorial (nombre) VALUES (?)";
+        String sql = "INSERT INTO editoriales (nombre) VALUES (?)";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -75,7 +75,7 @@ public List<Editorial> obtenerTodos() {
     
 
     public boolean actualizar(Editorial editorial) {
-        String sql = "UPDATE editorial SET nombre = ? WHERE idEditorial = ?";
+        String sql = "UPDATE editoriales SET nombre = ? WHERE idEditorial = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -94,7 +94,7 @@ public List<Editorial> obtenerTodos() {
     
     
     public boolean eliminar(int idEditorial) {
-        String sql = "DELETE FROM editorial WHERE idEditorial = ?";
+        String sql = "DELETE FROM editoriales WHERE idEditorial = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

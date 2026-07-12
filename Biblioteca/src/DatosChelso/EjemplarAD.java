@@ -10,7 +10,7 @@ public class EjemplarAD {
     
 
     public boolean insertarEjemplares(int idLibro, int cantidad) {
-        String sql = "INSERT INTO ejemplar (idLibro, estado) VALUES (?, 'disponible')";
+        String sql = "INSERT INTO ejemplares (idLibro, estado) VALUES (?, 'disponible')";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -31,7 +31,7 @@ public class EjemplarAD {
     
 
     public int contarDisponibles(int idLibro) {
-        String sql = "SELECT COUNT(*) as cantidad FROM ejemplar WHERE idLibro = ? AND estado = 'disponible'";
+        String sql = "SELECT COUNT(*) as cantidad FROM ejemplares WHERE idLibro = ? AND estado = 'disponible'";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -51,7 +51,7 @@ public class EjemplarAD {
     
 
     public boolean eliminarPorLibro(int idLibro) {
-        String sql = "DELETE FROM ejemplar WHERE idLibro = ?";
+        String sql = "DELETE FROM ejemplares WHERE idLibro = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

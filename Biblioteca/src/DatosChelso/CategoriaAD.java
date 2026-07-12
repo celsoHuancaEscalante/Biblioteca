@@ -13,7 +13,7 @@ public class CategoriaAD {
      */
     public List<Categoria> obtenerTodas() {
         List<Categoria> categorias = new ArrayList<>();
-        String sql = "SELECT idCategoria, nombre FROM categoria";
+        String sql = "SELECT idCategoria, nombre FROM categorias";
         
         try (Connection conn = ConnectMySQL.conn();
              Statement stmt = conn.createStatement();
@@ -37,7 +37,7 @@ public class CategoriaAD {
      * Obtiene una categoría por nombre
      */
     public Categoria obtenerPorNombre(String nombre) {
-        String sql = "SELECT idCategoria, nombre FROM categoria WHERE nombre = ?";
+        String sql = "SELECT idCategoria, nombre FROM categorias WHERE nombre = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -62,7 +62,7 @@ public class CategoriaAD {
      * Obtiene categoría por ID
      */
     public Categoria obtenerPorId(int idCategoria) {
-        String sql = "SELECT idCategoria, nombre FROM categoria WHERE idCategoria = ?";
+        String sql = "SELECT idCategoria, nombre FROM categorias WHERE idCategoria = ?";
         
         try (Connection conn = ConnectMySQL.conn();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
