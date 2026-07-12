@@ -9,4 +9,67 @@ public class Cliente {
     private String telefono; 
     private String correo;
     private LocalDate fechaRegistro; 
+
+        // FrmPrestamos_Jhosuar//
+
+    public Cliente() {
+    }
+
+    public Cliente(String dni, String primerNombre, String primerApellido, String telefono, String correo) {
+        this.dni = dni;
+        this.primerNombre = primerNombre;
+        this.primerApellido = primerApellido;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.fechaRegistro = LocalDate.now();
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getPrimerNombre() {
+        return primerNombre;
+    }
+
+    public void setPrimerNombre(String primerNombre) {
+        this.primerNombre = primerNombre;
+    }
+
+    public String getPrimerApellido() {
+        return primerApellido;
+    }
+
+    public void setPrimerApellido(String primerApellido) {
+        this.primerApellido = primerApellido;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
 }
+
