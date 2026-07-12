@@ -1,12 +1,8 @@
 
 package LogicaChelso;
 
-import DatosChelso.EjemplarAD;
-import DatosChelso.EditorialAD;
-import DatosChelso.AutorAD;
-import DatosChelso.GeneroAD;
-import DatosChelso.LibroAD;
 import ClaseBase.*;
+import DatosChelso.*;
 import java.util.*;
 
 public class LogicaBuscar {
@@ -43,6 +39,7 @@ public class LogicaBuscar {
         List<Libro> libros = libroAD.obtenerTodos();
         
         for (Libro libro : libros) {
+            
             Object[] fila = {
                 libro.getIdLibro(),
                 libro.getTitulo(),
@@ -75,7 +72,7 @@ public class LogicaBuscar {
                 libro.getEditorial().getNombre(),
                 libro.getGenero().getNombre(),
                 libro.getStock(),
-                libro.getCategoria().getNombre()
+                libro.getCategoria().getNombre() 
             };
             filas.add(fila);
         }
@@ -134,3 +131,4 @@ public class LogicaBuscar {
     }
     
 }
+

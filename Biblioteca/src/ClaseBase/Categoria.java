@@ -9,7 +9,7 @@ public class Categoria implements Mostrar{
     private int diasMaximos;
     private double multaPorDia;
     private double garantia;
-
+    
     public Categoria(int idCategoria, String nombre) {
         this.idCategoria = idCategoria;
         this.nombre = nombre;
@@ -80,7 +80,5 @@ public class Categoria implements Mostrar{
     public String mostrarDatos() {
        return nombre; 
     }
-    
-    
     
 }

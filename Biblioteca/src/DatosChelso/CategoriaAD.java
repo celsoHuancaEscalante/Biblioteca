@@ -8,7 +8,9 @@ import java.util.*;
 
 public class CategoriaAD {
     
-    
+    /**
+     * Obtiene todas las categorías de la BD
+     */
     public List<Categoria> obtenerTodas() {
         List<Categoria> categorias = new ArrayList<>();
         String sql = "SELECT idCategoria, nombre FROM categoria";
@@ -20,7 +22,7 @@ public class CategoriaAD {
             while (rs.next()) {
                 Categoria cat = new Categoria(
                     rs.getInt("idCategoria"),
-                    rs.getString("nombre")  
+                    rs.getString("nombre") 
                 );
                 categorias.add(cat);
             }
@@ -31,7 +33,9 @@ public class CategoriaAD {
         return categorias;
     }
     
-    
+    /**
+     * Obtiene una categoría por nombre
+     */
     public Categoria obtenerPorNombre(String nombre) {
         String sql = "SELECT idCategoria, nombre FROM categoria WHERE nombre = ?";
         
@@ -39,29 +43,6 @@ public class CategoriaAD {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, nombre);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return new Categoria(
-                    rs.getInt("idCategoria"),
-                    rs.getString("nombre") 
-                );
-            }
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-        
-        return null;
-    }
-    
-    
-    public Categoria obtenerPorId(int idCategoria) {
-        String sql = "SELECT idCategoria, nombre FROM categoria WHERE idCategoria = ?";
-        
-        try (Connection conn = ConnectMySQL.conn();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, idCategoria);
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
@@ -76,6 +57,30 @@ public class CategoriaAD {
         
         return null;
     }
-
     
+    /**
+     * Obtiene categoría por ID
+     */
+    public Categoria obtenerPorId(int idCategoria) {
+        String sql = "SELECT idCategoria, nombre FROM categoria WHERE idCategoria = ?";
+        
+        try (Connection conn = ConnectMySQL.conn();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, idCategoria);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return new Categoria(
+                    rs.getInt("idCategoria"),
+                    rs.getString("nombre")  //
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        
+        return null;
+    }
+
 }

@@ -58,8 +58,10 @@ public class LogicaRegistrar {
             nombreCategoria = "Antiguo";
         }
         
+        // Obtener de BD
         Categoria categoria = categoriaAD.obtenerPorNombre(nombreCategoria);
         if (categoria == null) {
+            // Fallback (aunque debería existir en BD)
             categoria = new Categoria(0, nombreCategoria);
         }
         
@@ -89,8 +91,8 @@ public class LogicaRegistrar {
                 return "El género seleccionado no existe en la base de datos";
             }
             
-            Categoria categoria = calcularCategoria(ano);
-            
+            Categoria categoria = calcularCategoria(ano);    
+                
             // INSERTAR O ACTUALIZAR LIBRO
             if (libroActual != null) {
                 // MODIFICAR LIBRO EXISTENTE
@@ -111,7 +113,7 @@ public class LogicaRegistrar {
                 }
             } else {
                 // INSERTAR NUEVO LIBRO
-                Libro nuevoLibro = new Libro(0,categoria, genero, autor, editorial, titulo, stock, ano);
+                Libro nuevoLibro = new Libro(0, genero, autor, editorial, titulo, stock, ano, categoria);
                 int idLibroInsertado = libroAD.insertar(nuevoLibro);
                 
                 if (idLibroInsertado > 0) {
