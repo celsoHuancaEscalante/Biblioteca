@@ -1,3 +1,4 @@
+
 package Datos;
 
 import ClaseBase.Categoria;
@@ -81,4 +82,5 @@ public class CategoriaAD {
         
         return null;
     }
+
 }
