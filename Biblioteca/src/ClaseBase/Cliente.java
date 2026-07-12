@@ -24,6 +24,7 @@ public class Cliente {
         this.fechaRegistro = LocalDate.now();
     }
 
+    
     public String getDni() {
         return dni;
     }

@@ -1,5 +1,5 @@
 package Vista_Prestamos;
-
+//V1.4
 import ClaseBase.Cliente;
 import ClaseBase.Prestamo;
 import Datos_Prestamos.DatosSQL;
