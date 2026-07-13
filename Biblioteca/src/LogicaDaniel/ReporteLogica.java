@@ -52,7 +52,7 @@ public class ReporteLogica {
         // Consulta sql relacional con multiples uniones
         String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
            + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
-           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " // <-- Corregido a g.Nombre
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " 
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
            + "JOIN clientes c ON p.DNICliente = c.DNI "
@@ -140,7 +140,7 @@ public class ReporteLogica {
        // Consulta sql paramtetrizada
         String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
            + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
-           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " // <-- Corregido a g.Nombre
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " 
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
            + "JOIN clientes c ON p.DNICliente = c.DNI "
