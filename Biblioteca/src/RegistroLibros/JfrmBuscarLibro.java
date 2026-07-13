@@ -127,6 +127,7 @@ public class JfrmBuscarLibro extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
 
+        jPanel1.setBackground(new java.awt.Color(153, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(1090, 462));
 
         jLabel1.setText("Buscar:");
@@ -157,8 +158,12 @@ public class JfrmBuscarLibro extends javax.swing.JPanel {
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 102));
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Total de libros");
 
+        lblTotalLibros.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        lblTotalLibros.setForeground(new java.awt.Color(255, 255, 255));
         lblTotalLibros.setText("0");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
