@@ -52,7 +52,7 @@ public class ReporteLogica {
         // Consulta sql relacional con multiples uniones
         String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
            + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
-           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " // <-- Corregido a g.Nombre
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " 
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
            + "JOIN clientes c ON p.DNICliente = c.DNI "
@@ -140,7 +140,7 @@ public class ReporteLogica {
        // Consulta sql paramtetrizada
         String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
            + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
-           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " // <-- Corregido a g.Nombre
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " 
            + "FROM detalle_prestamo dp "
            + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
            + "JOIN clientes c ON p.DNICliente = c.DNI "
@@ -167,7 +167,7 @@ public class ReporteLogica {
             pst.setDate(1, fechaInicioSql);
             pst.setDate(2, fechaFinSql);
             
-            // Traemos los datos de XAMPP
+            // Lanza la consulta filtrada y obtiene las filas
             ResultSet rs = pst.executeQuery(); 
             //Formato de fecha
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
@@ -227,26 +227,33 @@ public class ReporteLogica {
     
     public ArrayList<Integer> obtenerAniosConGanacias () {
         ArrayList<Integer> anios = new ArrayList<>();
+        // Consulta sql
         String sql = "SELECT DISTINCT YEAR(p.FechaPrestamo) AS anio "
            + "FROM prestamos p "
            + "WHERE p.FechaDevolucion IS NOT NULL "
            + "ORDER BY anio DESC";
         try {            
+            //Conexion con la base de datos
             Connection cn = ConnectMySQL.conn();
             if (cn == null) {
             JOptionPane.showMessageDialog(null, "Error");
             return anios;
             }
+            //Prepara la consulta parametrizada 
             PreparedStatement pst = cn.prepareStatement(sql);
+            //Lanza la consulta
             ResultSet rs = pst.executeQuery();
             
-            while (rs.next()) {                
+            //Recorre fila por fila
+            while (rs.next()) {    
+                //Extrae el valor de "anio" y lo agrega a la lista
                 anios.add(rs.getInt("anio"));
             }
             rs.close();
             pst.close();
             cn.close();
             
+            //Captura de fallos
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al obtener años de ganacia: " + e.getMessage());
         }
