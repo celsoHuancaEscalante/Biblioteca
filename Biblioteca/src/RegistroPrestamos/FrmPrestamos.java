@@ -1,9 +1,10 @@
-package Vista_Prestamos_Jhosuar;
+package RegistroPrestamos;
 
 import ClaseBase.Cliente;
 import ClaseBase.Prestamo;
 import Datos_Prestamos_Jhosuar.DatosSQL;
 import Modelo_Prestamos_Jhosuar.Prestamos_Tabla;
+import VistaDeProyecto.frmMenu;
 
 import com.toedter.calendar.JCalendar;
 import java.text.SimpleDateFormat;
@@ -23,30 +24,28 @@ import java.awt.event.FocusEvent;
 
 import javax.swing.table.DefaultTableModel;
 
-    // FrmPrestamos_Jhosuar//
-    // V1.2 //
+// FrmPrestamos_Jhosuar//
+// V1.2 //
+public class FrmPrestamos extends javax.swing.JPanel {
 
-public class FrmPrestamos extends javax.swing.JFrame {
-    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmPrestamos.class.getName());
-    
+    private frmMenu frame; //Presentar a frmMenu.
+
     private Date fechaEntregaSeleccionada;
     private DatosSQL prestamos_Datos = new DatosSQL();
-    
-private boolean modoEdicion = false;
-private int filaEditando = -1;
-private final int COL_ID = 0;
-private final int COL_DNI = 1;
-private final int COL_USUARIO = 2;
-private final int COL_LIBRO = 3;
-private final int COL_FECHA_PRESTAMO = 4;
-private final int COL_FECHA_ENTREGA = 5;
-private final int COL_ESTADO = 6;
-private final int COL_MULTA = 7;
 
+    private boolean modoEdicion = false;
+    private int filaEditando = -1;
+    private final int COL_ID = 0;
+    private final int COL_DNI = 1;
+    private final int COL_USUARIO = 2;
+    private final int COL_LIBRO = 3;
+    private final int COL_FECHA_PRESTAMO = 4;
+    private final int COL_FECHA_ENTREGA = 5;
+    private final int COL_ESTADO = 6;
+    private final int COL_MULTA = 7;
 
-
-    public FrmPrestamos() {
+    public FrmPrestamos(frmMenu frame) {
         initComponents();
         configurarTabla();
         cargarPrestamos();
@@ -54,6 +53,9 @@ private final int COL_MULTA = 7;
         configurarTxtBuscarDni();
     }
 
+    public void setDNIUsuario(String DNI) {
+        txtDniUsuario.setText(DNI); // método para llenar DNI desde panel Cliente
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -80,8 +82,6 @@ private final int COL_MULTA = 7;
         txtBuscarDni = new javax.swing.JTextField();
         btnRegistrar1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(102, 255, 255));
 
@@ -236,7 +236,7 @@ private final int COL_MULTA = 7;
                 .addGap(305, 305, 305)
                 .addComponent(btnRegistrar1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(txtBuscarDni, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtBuscarDni, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -348,8 +348,8 @@ private final int COL_MULTA = 7;
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -363,89 +363,88 @@ private final int COL_MULTA = 7;
         );
 
         jPanel1.getAccessibleContext().setAccessibleName("");
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCalendarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalendarioActionPerformed
-        
-    JDialog dialogoCalendario = new JDialog(this, "Seleccionar fecha de entrega", true);
-    dialogoCalendario.setSize(400, 350);
-    dialogoCalendario.setLocationRelativeTo(this);
-    dialogoCalendario.setLayout(new java.awt.BorderLayout());
 
-    JCalendar calendario = new JCalendar();
+        JDialog dialogoCalendario = new JDialog(JOptionPane.getFrameForComponent(this), "Seleccionar fecha de entrega", true);
+        dialogoCalendario.setSize(400, 350);
+        dialogoCalendario.setLocationRelativeTo(this);
+        dialogoCalendario.setLayout(new java.awt.BorderLayout());
 
-    JButton btnAceptar = new JButton("Aceptar");
+        JCalendar calendario = new JCalendar();
 
-    btnAceptar.addActionListener(e -> {
-        fechaEntregaSeleccionada = calendario.getDate();
+        JButton btnAceptar = new JButton("Aceptar");
 
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaFormateada = formato.format(fechaEntregaSeleccionada);
+        btnAceptar.addActionListener(e -> {
+            fechaEntregaSeleccionada = calendario.getDate();
 
-        btnCalendario.setText(fechaFormateada);
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaFormateada = formato.format(fechaEntregaSeleccionada);
 
-        dialogoCalendario.dispose();
-    });
+            btnCalendario.setText(fechaFormateada);
 
-    dialogoCalendario.add(calendario, java.awt.BorderLayout.CENTER);
-    dialogoCalendario.add(btnAceptar, java.awt.BorderLayout.SOUTH);
+            dialogoCalendario.dispose();
+        });
 
-    dialogoCalendario.setVisible(true);
+        dialogoCalendario.add(calendario, java.awt.BorderLayout.CENTER);
+        dialogoCalendario.add(btnAceptar, java.awt.BorderLayout.SOUTH);
+
+        dialogoCalendario.setVisible(true);
 
     }//GEN-LAST:event_btnCalendarioActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
 
-    String dni = txtDniUsuario.getText().trim();
-    String codigoLibroTexto = txtCodigoLibro.getText().trim();
+        String dni = txtDniUsuario.getText().trim();
+        String codigoLibroTexto = txtCodigoLibro.getText().trim();
 
-    if (dni.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Ingrese el DNI del usuario.");
-        return;
-    }
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el DNI del usuario.");
+            return;
+        }
 
-    if (codigoLibroTexto.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Ingrese el código del libro.");
-        return;
-    }
+        if (codigoLibroTexto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el código del libro.");
+            return;
+        }
 
-    if (fechaEntregaSeleccionada == null) {
-        JOptionPane.showMessageDialog(this, "Seleccione una fecha de entrega.");
-        return;
-    }
+        if (fechaEntregaSeleccionada == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione una fecha de entrega.");
+            return;
+        }
 
-    int idLibro;
+        int idLibro;
 
-    try {
-        idLibro = Integer.parseInt(codigoLibroTexto);
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "El código del libro debe ser numérico.");
-        return;
-    }
+        try {
+            idLibro = Integer.parseInt(codigoLibroTexto);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El código del libro debe ser numérico.");
+            return;
+        }
 
-    Cliente cliente = new Cliente();
-    cliente.setDni(dni);
+        Cliente cliente = new Cliente();
+        cliente.setDni(dni);
 
-    LocalDate fechaEntrega = fechaEntregaSeleccionada
-            .toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate();
+        LocalDate fechaEntrega = fechaEntregaSeleccionada
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
 
-    Prestamo prestamo = new Prestamo();
-    prestamo.setCliente(cliente);
+        Prestamo prestamo = new Prestamo();
+        prestamo.setCliente(cliente);
 
-    // Usamos fechaVencimiento como fecha de entrega porque no modificamos ClaseBase.
-    prestamo.setFechaVencimiento(fechaEntrega);
+        // Usamos fechaVencimiento como fecha de entrega porque no modificamos ClaseBase.
+        prestamo.setFechaVencimiento(fechaEntrega);
 
-    boolean registrado = prestamos_Datos.registrarPrestamo(prestamo, idLibro);
+        boolean registrado = prestamos_Datos.registrarPrestamo(prestamo, idLibro);
 
-    JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+        JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
 
-    if (registrado) {
-        cargarPrestamos();
-        limpiarCampos(); }
+        if (registrado) {
+            cargarPrestamos();
+            limpiarCampos();
+        }
 
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
@@ -455,306 +454,299 @@ private final int COL_MULTA = 7;
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
 
-    int fila = TblPrestamos.getSelectedRow();
+        int fila = TblPrestamos.getSelectedRow();
 
-    if (fila == -1) {
-        JOptionPane.showMessageDialog(this, "Seleccione una fila para eliminar.");
-        return;
-    }
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una fila para eliminar.");
+            return;
+        }
 
-    int idPrestamo = Integer.parseInt(TblPrestamos.getValueAt(fila, COL_ID).toString());
+        int idPrestamo = Integer.parseInt(TblPrestamos.getValueAt(fila, COL_ID).toString());
 
-    int confirmacion = JOptionPane.showConfirmDialog(
-            this,
-            "¿Está seguro de eliminar este préstamo?",
-            "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION
-    );
+        int confirmacion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Está seguro de eliminar este préstamo?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirmacion != JOptionPane.YES_OPTION) {
-        return;
-    }
+        if (confirmacion != JOptionPane.YES_OPTION) {
+            return;
+        }
 
-    boolean eliminado = prestamos_Datos.eliminarPrestamo(idPrestamo);
+        boolean eliminado = prestamos_Datos.eliminarPrestamo(idPrestamo);
 
-    JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+        JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
 
-    if (eliminado) {
-        modoEdicion = false;
-        filaEditando = -1;
-        cargarPrestamos();
-    }
+        if (eliminado) {
+            modoEdicion = false;
+            filaEditando = -1;
+            cargarPrestamos();
+        }
 
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
 
-    int fila = TblPrestamos.getSelectedRow();
+        int fila = TblPrestamos.getSelectedRow();
 
-    if (fila == -1) {
-        JOptionPane.showMessageDialog(this, "Seleccione una fila para modificar.");
-        return;
-    }
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una fila para modificar.");
+            return;
+        }
 
-    modoEdicion = true;
-    filaEditando = fila;
+        modoEdicion = true;
+        filaEditando = fila;
 
-    JOptionPane.showMessageDialog(
-        this,
-        "Modo edición activado.\n\n" +
-        "Puede editar DNI y LIBRO.\n" +
-        "En LIBRO escriba el código del libro, no el nombre.\n" +
-        "Para cambiar FECHA ENTREGA, haga clic en esa celda y seleccione una fecha."
-    );
+        JOptionPane.showMessageDialog(
+                this,
+                "Modo edición activado.\n\n"
+                + "Puede editar DNI y LIBRO.\n"
+                + "En LIBRO escriba el código del libro, no el nombre.\n"
+                + "Para cambiar FECHA ENTREGA, haga clic en esa celda y seleccione una fecha."
+        );
 
-    TblPrestamos.editCellAt(fila, COL_DNI);
+        TblPrestamos.editCellAt(fila, COL_DNI);
 
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
-    if (!modoEdicion || filaEditando == -1) {
-        JOptionPane.showMessageDialog(this, "No hay ninguna fila en edición.");
-        return;
-    }
-
-    int fila = filaEditando;
-
-    int idPrestamo = Integer.parseInt(TblPrestamos.getValueAt(fila, COL_ID).toString());
-    String dniNuevo = TblPrestamos.getValueAt(fila, COL_DNI).toString().trim();
-    Object valorLibro = TblPrestamos.getValueAt(fila, COL_LIBRO);
-    Object valorFechaEntrega = TblPrestamos.getValueAt(fila, COL_FECHA_ENTREGA);
-
-    if (dniNuevo.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El DNI no puede estar vacío.");
-        return;
-    }
-
-    if (valorFechaEntrega == null) {
-        JOptionPane.showMessageDialog(this, "La fecha de entrega no puede estar vacía.");
-        return;
-    }
-
-    LocalDate fechaEntregaNueva;
-
-    if (valorFechaEntrega instanceof LocalDate) {
-        fechaEntregaNueva = (LocalDate) valorFechaEntrega;
-
-    } else if (valorFechaEntrega instanceof java.sql.Date) {
-        fechaEntregaNueva = ((java.sql.Date) valorFechaEntrega).toLocalDate();
-
-    } else if (valorFechaEntrega instanceof java.util.Date) {
-        fechaEntregaNueva = ((java.util.Date) valorFechaEntrega)
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-    } else {
-        try {
-            fechaEntregaNueva = java.sql.Date.valueOf(valorFechaEntrega.toString()).toLocalDate();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Fecha inválida. Use el calendario para modificarla.");
+        if (!modoEdicion || filaEditando == -1) {
+            JOptionPane.showMessageDialog(this, "No hay ninguna fila en edición.");
             return;
         }
-    }
 
-    boolean guardado = prestamos_Datos.modificarPrestamo(
-            idPrestamo,
-            dniNuevo,
-            valorLibro.toString().trim(),
-            fechaEntregaNueva
-    );
+        int fila = filaEditando;
 
-    JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+        int idPrestamo = Integer.parseInt(TblPrestamos.getValueAt(fila, COL_ID).toString());
+        String dniNuevo = TblPrestamos.getValueAt(fila, COL_DNI).toString().trim();
+        Object valorLibro = TblPrestamos.getValueAt(fila, COL_LIBRO);
+        Object valorFechaEntrega = TblPrestamos.getValueAt(fila, COL_FECHA_ENTREGA);
 
-    if (guardado) {
-        modoEdicion = false;
-        filaEditando = -1;
-        cargarPrestamos();
-    }
+        if (dniNuevo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El DNI no puede estar vacío.");
+            return;
+        }
+
+        if (valorFechaEntrega == null) {
+            JOptionPane.showMessageDialog(this, "La fecha de entrega no puede estar vacía.");
+            return;
+        }
+
+        LocalDate fechaEntregaNueva;
+
+        if (valorFechaEntrega instanceof LocalDate) {
+            fechaEntregaNueva = (LocalDate) valorFechaEntrega;
+
+        } else if (valorFechaEntrega instanceof java.sql.Date) {
+            fechaEntregaNueva = ((java.sql.Date) valorFechaEntrega).toLocalDate();
+
+        } else if (valorFechaEntrega instanceof java.util.Date) {
+            fechaEntregaNueva = ((java.util.Date) valorFechaEntrega)
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+        } else {
+            try {
+                fechaEntregaNueva = java.sql.Date.valueOf(valorFechaEntrega.toString()).toLocalDate();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Fecha inválida. Use el calendario para modificarla.");
+                return;
+            }
+        }
+
+        boolean guardado = prestamos_Datos.modificarPrestamo(
+                idPrestamo,
+                dniNuevo,
+                valorLibro.toString().trim(),
+                fechaEntregaNueva
+        );
+
+        JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+
+        if (guardado) {
+            modoEdicion = false;
+            filaEditando = -1;
+            cargarPrestamos();
+        }
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnRegistrar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrar1ActionPerformed
 
-    String dniBuscar = txtBuscarDni.getText().trim();
+        String dniBuscar = txtBuscarDni.getText().trim();
 
-    if (dniBuscar.isEmpty() || dniBuscar.equals("BUSCAR POR DNI ...")) {
-        JOptionPane.showMessageDialog(this, "Ingrese un DNI para buscar.");
-        return;
-    }
+        if (dniBuscar.isEmpty() || dniBuscar.equals("BUSCAR POR DNI ...")) {
+            JOptionPane.showMessageDialog(this, "Ingrese un DNI para buscar.");
+            return;
+        }
 
-    cargarPrestamosPorDni(dniBuscar);
+        cargarPrestamosPorDni(dniBuscar);
 
     }//GEN-LAST:event_btnRegistrar1ActionPerformed
 
     //METODOSUSADOS//
+    private void configurarTabla() {
 
-private void configurarTabla() {
+        DefaultTableModel modelo = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{
+                    "ID",
+                    "DNI",
+                    "USUARIO",
+                    "LIBRO",
+                    "FECHA PRESTAMO",
+                    "FECHA ENTREGA",
+                    "ESTADO PRESTAMO",
+                    "MULTA ACUMULADA"
+                }
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
 
-    DefaultTableModel modelo = new DefaultTableModel(
-        new Object[][]{},
-        new String[]{
-            "ID",
-            "DNI",
-            "USUARIO",
-            "LIBRO",
-            "FECHA PRESTAMO",
-            "FECHA ENTREGA",
-            "ESTADO PRESTAMO",
-            "MULTA ACUMULADA"
-        }
-    ) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
+                if (!modoEdicion) {
+                    return false;
+                }
 
-            if (!modoEdicion) {
-                return false;
+                if (row != filaEditando) {
+                    return false;
+                }
+
+                // Solo permitimos editar DNI y LIBRO.
+                // En LIBRO se debe escribir el código del libro.
+                return column == COL_DNI || column == COL_LIBRO;
             }
+        };
 
-            if (row != filaEditando) {
-                return false;
-            }
+        TblPrestamos.setModel(modelo);
+        TblPrestamos.setRowSelectionAllowed(true);
+        TblPrestamos.setColumnSelectionAllowed(false);
+        TblPrestamos.getTableHeader().setReorderingAllowed(false);
+    }
 
-            // Solo permitimos editar DNI y LIBRO.
-            // En LIBRO se debe escribir el código del libro.
-            return column == COL_DNI || column == COL_LIBRO;
+    private void cargarPrestamos() {
+
+        DefaultTableModel modelo = (DefaultTableModel) TblPrestamos.getModel();
+        modelo.setRowCount(0);
+
+        ArrayList<Prestamos_Tabla> lista = prestamos_Datos.listarPrestamos();
+
+        for (Prestamos_Tabla p : lista) {
+            modelo.addRow(new Object[]{
+                p.getIdPrestamo(),
+                p.getDni(),
+                p.getUsuario(),
+                p.getLibro(),
+                p.getFechaPrestamo(),
+                p.getFechaEntrega(),
+                p.getEstadoPrestamo(),
+                "S/ " + p.getMultaAcumulada()
+            });
         }
-    };
 
-    TblPrestamos.setModel(modelo);
-    TblPrestamos.setRowSelectionAllowed(true);
-    TblPrestamos.setColumnSelectionAllowed(false);
-    TblPrestamos.getTableHeader().setReorderingAllowed(false);
-}
-    
-private void cargarPrestamos() {
+        if (lista.isEmpty() && prestamos_Datos.getMensaje() != null) {
+            JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+        }
+    }
 
-    DefaultTableModel modelo = (DefaultTableModel) TblPrestamos.getModel();
-    modelo.setRowCount(0);
+    private void eventoCalendarioTabla() {
 
-    ArrayList<Prestamos_Tabla> lista = prestamos_Datos.listarPrestamos();
+        TblPrestamos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
 
-    for (Prestamos_Tabla p : lista) {
-        modelo.addRow(new Object[]{
-            p.getIdPrestamo(),
-            p.getDni(),
-            p.getUsuario(),
-            p.getLibro(),
-            p.getFechaPrestamo(),
-            p.getFechaEntrega(),
-            p.getEstadoPrestamo(),
-            "S/ " + p.getMultaAcumulada()
+                if (!modoEdicion) {
+                    return;
+                }
+
+                int fila = TblPrestamos.getSelectedRow();
+                int columna = TblPrestamos.getSelectedColumn();
+
+                if (fila == filaEditando && columna == COL_FECHA_ENTREGA) {
+                    abrirCalendarioParaTabla(fila);
+                }
+            }
         });
     }
 
-    if (lista.isEmpty() && prestamos_Datos.getMensaje() != null) {
-        JOptionPane.showMessageDialog(this, prestamos_Datos.getMensaje());
+    private void abrirCalendarioParaTabla(int fila) {
+
+        JDialog dialogo = new JDialog(JOptionPane.getFrameForComponent(this), "Modificar fecha de entrega", true);
+        dialogo.setSize(400, 350);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setLayout(new java.awt.BorderLayout());
+
+        JCalendar calendario = new JCalendar();
+        JButton btnAceptar = new JButton("Aceptar");
+
+        btnAceptar.addActionListener(e -> {
+            Date fechaNueva = calendario.getDate();
+
+            java.sql.Date fechaSQL = new java.sql.Date(fechaNueva.getTime());
+
+            TblPrestamos.setValueAt(fechaSQL, fila, COL_FECHA_ENTREGA);
+
+            dialogo.dispose();
+        });
+
+        dialogo.add(calendario, java.awt.BorderLayout.CENTER);
+        dialogo.add(btnAceptar, java.awt.BorderLayout.SOUTH);
+        dialogo.setVisible(true);
     }
-}
 
-private void eventoCalendarioTabla() {
+    private void limpiarCampos() {
+        txtDniUsuario.setText("");
+        txtCodigoLibro.setText("");
+        btnCalendario.setText("- CALENDARIO -");
+        fechaEntregaSeleccionada = null;
+    }
 
-    TblPrestamos.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
+    private void configurarTxtBuscarDni() {
 
-            if (!modoEdicion) {
-                return;
+        txtBuscarDni.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (txtBuscarDni.getText().equals("BUSCAR POR DNI ...")) {
+                    txtBuscarDni.setText("");
+                }
             }
 
-            int fila = TblPrestamos.getSelectedRow();
-            int columna = TblPrestamos.getSelectedColumn();
-
-            if (fila == filaEditando && columna == COL_FECHA_ENTREGA) {
-                abrirCalendarioParaTabla(fila);
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (txtBuscarDni.getText().trim().isEmpty()) {
+                    txtBuscarDni.setText("BUSCAR POR DNI ...");
+                }
             }
-        }
-    });
-}
-
-private void abrirCalendarioParaTabla(int fila) {
-
-    JDialog dialogo = new JDialog(this, "Modificar fecha de entrega", true);
-    dialogo.setSize(400, 350);
-    dialogo.setLocationRelativeTo(this);
-    dialogo.setLayout(new java.awt.BorderLayout());
-
-    JCalendar calendario = new JCalendar();
-    JButton btnAceptar = new JButton("Aceptar");
-
-    btnAceptar.addActionListener(e -> {
-        Date fechaNueva = calendario.getDate();
-
-        java.sql.Date fechaSQL = new java.sql.Date(fechaNueva.getTime());
-
-        TblPrestamos.setValueAt(fechaSQL, fila, COL_FECHA_ENTREGA);
-
-        dialogo.dispose();
-    });
-
-    dialogo.add(calendario, java.awt.BorderLayout.CENTER);
-    dialogo.add(btnAceptar, java.awt.BorderLayout.SOUTH);
-    dialogo.setVisible(true);
-}
-
-private void limpiarCampos() {
-    txtDniUsuario.setText("");
-    txtCodigoLibro.setText("");
-    btnCalendario.setText("- CALENDARIO -");
-    fechaEntregaSeleccionada = null;
-}
-
-private void configurarTxtBuscarDni() {
-
-    txtBuscarDni.addFocusListener(new FocusAdapter() {
-        @Override
-        public void focusGained(FocusEvent e) {
-            if (txtBuscarDni.getText().equals("BUSCAR POR DNI ...")) {
-                txtBuscarDni.setText("");
-            }
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            if (txtBuscarDni.getText().trim().isEmpty()) {
-                txtBuscarDni.setText("BUSCAR POR DNI ...");
-            }
-        }
-    });
-}
-
-private void cargarPrestamosPorDni(String dniBuscar) {
-
-    DefaultTableModel modelo = (DefaultTableModel) TblPrestamos.getModel();
-    modelo.setRowCount(0);
-
-    ArrayList<Prestamos_Tabla> lista = prestamos_Datos.buscarPrestamosPorDni(dniBuscar);
-
-    for (Prestamos_Tabla p : lista) {
-        modelo.addRow(new Object[]{
-            p.getIdPrestamo(),
-            p.getDni(),
-            p.getUsuario(),
-            p.getLibro(),
-            p.getFechaPrestamo(),
-            p.getFechaEntrega(),
-            p.getEstadoPrestamo(),
-            "S/ " + p.getMultaAcumulada()
         });
     }
 
-    if (lista.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "No se encontraron préstamos para el DNI: " + dniBuscar);
+    private void cargarPrestamosPorDni(String dniBuscar) {
+
+        DefaultTableModel modelo = (DefaultTableModel) TblPrestamos.getModel();
+        modelo.setRowCount(0);
+
+        ArrayList<Prestamos_Tabla> lista = prestamos_Datos.buscarPrestamosPorDni(dniBuscar);
+
+        for (Prestamos_Tabla p : lista) {
+            modelo.addRow(new Object[]{
+                p.getIdPrestamo(),
+                p.getDni(),
+                p.getUsuario(),
+                p.getLibro(),
+                p.getFechaPrestamo(),
+                p.getFechaEntrega(),
+                p.getEstadoPrestamo(),
+                "S/ " + p.getMultaAcumulada()
+            });
+        }
+
+        if (lista.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se encontraron préstamos para el DNI: " + dniBuscar);
+        }
     }
-}
 
-    public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(() -> new FrmPrestamos().setVisible(true));
-    }
-
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TblPrestamos;
     private javax.swing.JButton btnCalendario;

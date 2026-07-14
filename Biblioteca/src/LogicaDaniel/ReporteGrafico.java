@@ -58,11 +58,11 @@ public class ReporteGrafico {
                 "Generos Literarios", 
                 "Generos", 
                 "Canitdad de Prestamos", 
-                dataset, 
+                dataset, // El origen  de datos 
                 PlotOrientation.VERTICAL, 
-                false, 
-                true, 
-                false);
+                false, //Indica que no queremos mostrar la leyenda de series
+                true, //Activa las herramientas de ayuda flotantes
+                false); //Desactiva la generacion automatica de url
         
         // Recupera la zona de trazado del gráfico y la transforma a su subtipo CategoryPlot
         CategoryPlot plot = chart.getCategoryPlot();
@@ -174,11 +174,12 @@ public class ReporteGrafico {
         //Creacion del objeto con la fabrica de graficos
         JFreeChart chart = ChartFactory.createLineChart("", 
                 tituloEjeX, "Monto Acumulado (S/)", 
-                dataset, 
+                dataset, // El origen  de datos 
                 PlotOrientation.VERTICAL, 
-                true, 
-                true, 
-                false);
+                true,   // Muestra la pequeña leyenda de series de color abajo ("Ganancias (S/)")
+                true, // Activa las etiquetas de ayuda flotantes para el usuario
+                false); // Indica que no queremos mapear enlaces de internet interactivos
+        
         // Recupera la zona de trazado del gráfico y la transforma a su subtipo CategoryPlot
         CategoryPlot plot = chart.getCategoryPlot();
         // Recupera el eje del rango de dinero

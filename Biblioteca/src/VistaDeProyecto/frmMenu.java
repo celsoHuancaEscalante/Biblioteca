@@ -1,22 +1,40 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package VistaDeProyecto;
 
-/**
- *
- * @author Raul
- */
-public class frmMenu extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmMenu.class.getName());
+import RegistroLibros.JfrmBuscarLibro;
+import ReporteIngresos.Reporte;
+import RegistroClientes.PanelClientes;
+import RegistroPrestamos.FrmPrestamos;
+import java.awt.CardLayout;
 
-    /**
-     * Creates new form Menu
-     */
+public class frmMenu extends javax.swing.JFrame {
+
+    private FrmPrestamos panelPrestamos;//variable para guardar referencia a prestamos
+
     public frmMenu() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        PanelContenido.setLayout(new java.awt.CardLayout());
+        PanelContenido.add(new PanelInicio(), "inicio");
+
+        PanelContenido.add(new PanelClientes(this), "clientes");
+
+        PanelContenido.add(new JfrmBuscarLibro(), "libros");
+
+        panelPrestamos = new FrmPrestamos(this);
+        PanelContenido.add(panelPrestamos, "prestamos"); //se guarda la referencia a prestamos
+
+        PanelContenido.add(new Reporte(), "reportes");
+        PanelContenido.setPreferredSize(new java.awt.Dimension(1100, 650));
+        this.pack();
+    }
+
+    public void mostrarPanel(String nombrePanel) {
+        CardLayout c = (CardLayout) PanelContenido.getLayout();
+        c.show(PanelContenido, nombrePanel);
+    }
+
+    public void enviarDniAPrestamos(String DNI) {  //método que recibe el aviso de Clientes y envia dni a prestamo
+        panelPrestamos.setDNIUsuario(DNI);
     }
 
     /**
@@ -28,21 +46,162 @@ public class frmMenu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        panelBarra = new java.awt.Panel();
+        btnInicio = new javax.swing.JButton();
+        btnClientes = new javax.swing.JButton();
+        btnLibros = new javax.swing.JButton();
+        btnPrestamos = new javax.swing.JButton();
+        btnReportes = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        PanelContenido = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("BIBLIOCONTROL-Sistema de Gestión de Libros");
+        setBackground(new java.awt.Color(56, 175, 255));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        panelBarra.setBackground(new java.awt.Color(56, 175, 255));
+        panelBarra.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        panelBarra.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnInicio.setBackground(new java.awt.Color(0, 51, 255));
+        btnInicio.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnInicio.setForeground(new java.awt.Color(255, 255, 255));
+        btnInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/house.png"))); // NOI18N
+        btnInicio.setText("INICIO");
+        btnInicio.setToolTipText("");
+        btnInicio.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnInicio.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnInicio.setPreferredSize(new java.awt.Dimension(140, 50));
+        btnInicio.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInicioActionPerformed(evt);
+            }
+        });
+        panelBarra.add(btnInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 120, 60));
+
+        btnClientes.setBackground(new java.awt.Color(0, 51, 255));
+        btnClientes.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnClientes.setForeground(new java.awt.Color(255, 255, 255));
+        btnClientes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/client.png"))); // NOI18N
+        btnClientes.setText("CLIENTES");
+        btnClientes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnClientes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnClientes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClientesActionPerformed(evt);
+            }
+        });
+        panelBarra.add(btnClientes, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 120, 60));
+
+        btnLibros.setBackground(new java.awt.Color(0, 51, 255));
+        btnLibros.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLibros.setForeground(new java.awt.Color(255, 255, 255));
+        btnLibros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/stack-of-books.png"))); // NOI18N
+        btnLibros.setText("LIBROS");
+        btnLibros.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnLibros.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnLibros.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLibrosActionPerformed(evt);
+            }
+        });
+        panelBarra.add(btnLibros, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 120, 60));
+
+        btnPrestamos.setBackground(new java.awt.Color(0, 51, 255));
+        btnPrestamos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnPrestamos.setForeground(new java.awt.Color(255, 255, 255));
+        btnPrestamos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/return.png"))); // NOI18N
+        btnPrestamos.setText("PRÉSTAMOS");
+        btnPrestamos.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnPrestamos.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnPrestamos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPrestamosActionPerformed(evt);
+            }
+        });
+        panelBarra.add(btnPrestamos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 120, 60));
+
+        btnReportes.setBackground(new java.awt.Color(0, 51, 255));
+        btnReportes.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnReportes.setForeground(new java.awt.Color(255, 255, 255));
+        btnReportes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/report.png"))); // NOI18N
+        btnReportes.setText("REPORTERÍA");
+        btnReportes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnReportes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnReportes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReportesActionPerformed(evt);
+            }
+        });
+        panelBarra.add(btnReportes, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, 120, 60));
+
+        getContentPane().add(panelBarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 140, 540));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/RecursosDaniel/library (2).png"))); // NOI18N
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 60));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("Bienvenido!");
+        jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1100, 0, 140, 30));
+
+        PanelContenido.setPreferredSize(new java.awt.Dimension(1100, 550));
+        PanelContenido.setLayout(new java.awt.BorderLayout());
+        getContentPane().add(PanelContenido, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 60, 1100, 550));
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI Semibold", 0, 36)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("-Sistema de Gestión de Biblioteca");
+        jLabel9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 0, 590, 60));
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 0));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("BIBLIOCONTROL ");
+        jLabel12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 0, 300, 60));
+
+        jPanel1.setBackground(new java.awt.Color(56, 175, 255));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1240, 610));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
+        CardLayout c1 = (CardLayout) PanelContenido.getLayout();
+        c1.show(PanelContenido, "inicio");
+
+    }//GEN-LAST:event_btnInicioActionPerformed
+
+    private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
+        CardLayout cl = (CardLayout) PanelContenido.getLayout();
+        cl.show(PanelContenido, "clientes");
+    }//GEN-LAST:event_btnClientesActionPerformed
+
+    private void btnLibrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLibrosActionPerformed
+        CardLayout cl = (CardLayout) PanelContenido.getLayout();
+        cl.show(PanelContenido, "libros");
+    }//GEN-LAST:event_btnLibrosActionPerformed
+
+    private void btnPrestamosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrestamosActionPerformed
+        CardLayout cl = (CardLayout) PanelContenido.getLayout();
+        cl.show(PanelContenido, "prestamos");
+    }//GEN-LAST:event_btnPrestamosActionPerformed
+
+    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
+        CardLayout cl = (CardLayout) PanelContenido.getLayout();
+        cl.show(PanelContenido, "reportes");
+    }//GEN-LAST:event_btnReportesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -60,15 +219,44 @@ public class frmMenu extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(frmMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(frmMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(frmMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(frmMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new frmMenu().setVisible(true));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new frmLogin().setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel PanelContenido;
+    private javax.swing.JButton btnClientes;
+    private javax.swing.JButton btnInicio;
+    private javax.swing.JButton btnLibros;
+    private javax.swing.JButton btnPrestamos;
+    private javax.swing.JButton btnReportes;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private java.awt.Panel panelBarra;
     // End of variables declaration//GEN-END:variables
 }

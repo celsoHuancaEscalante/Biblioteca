@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package VistaDaniel;
+package ReporteIngresos;
 
 import LogicaDaniel.ReporteFila;
 import LogicaDaniel.ReporteGrafico;
@@ -137,7 +137,6 @@ public class dlg_GraficoLineas extends javax.swing.JDialog {
         );
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Reporte Ganancias");
 
