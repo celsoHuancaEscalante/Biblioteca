@@ -50,17 +50,18 @@ public class ReporteLogica {
         // Instanciamiento de la lista dinámica vacía 
         ArrayList <ReporteFila> lista = new ArrayList<>();
         // Consulta sql relacional con multiples uniones
-        String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " // <-- g.genero
+        String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
+           + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " 
            + "FROM detalle_prestamo dp "
-           + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
-           + "JOIN clientes c ON p.dni = c.dni "
-           + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
-           + "JOIN libros l ON e.id_libro = l.id_libro "
-           + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
-           + "JOIN generos g ON l.id_genero = g.id_genero "
-           + "WHERE p.fecha_devolucion IS NOT NULL"
-           + " ORDER BY p.id_prestamo ASC";
+           + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
+           + "JOIN clientes c ON p.DNICliente = c.DNI "
+           + "JOIN ejemplares e ON dp.IDEjemplar = e.IDEjemplar "
+           + "JOIN libros l ON e.IDLibro = l.IDLibro "
+           + "JOIN categorias cat ON l.IDCategoria = cat.IDCategoria "
+           + "JOIN generos g ON l.IDGenero = g.IDGenero "
+           + "WHERE p.FechaDevolucion IS NOT NULL"
+           + " ORDER BY p.IDPrestamo ASC";
         
         try {
             // Solicita a la clase ConnectMySQL que abra el canal de comunicación
@@ -137,18 +138,19 @@ public class ReporteLogica {
     public ArrayList <ReporteFila> obtenerHistorialFiltrado (java.util.Date de, java.util.Date hasta){
        ArrayList <ReporteFila> lista = new ArrayList<>();
        // Consulta sql paramtetrizada
-        String sql = "SELECT p.id_prestamo, dp.id_ejemplar, p.dni, p.fecha_prestamo, p.fecha_devolucion, p.fecha_vencimiento, "
-           + "c.nombres, l.titulo, cat.costo_mora AS precio_base, dp.costo_mora AS multa_diaria, g.genero AS nombre_genero " 
+        String sql = "SELECT p.IDPrestamo AS id_prestamo, dp.IDEjemplar AS id_ejemplar, p.DNICliente AS dni, "
+           + "p.FechaPrestamo AS fecha_prestamo, p.FechaDevolucion AS fecha_devolucion, p.FechaVencimiento AS fecha_vencimiento, "
+           + "CONCAT(c.PrimerNombre, ' ', c.PrimerApellido) AS nombres, l.titulo, dp.PrecioPrestamoAplicado AS precio_base, dp.MultaPorDiaAplicada AS multa_diaria, g.Nombre AS nombre_genero " 
            + "FROM detalle_prestamo dp "
-           + "JOIN prestamos p ON dp.id_prestamo = p.id_prestamo "
-           + "JOIN clientes c ON p.dni = c.dni "
-           + "JOIN ejemplares e ON dp.id_ejemplar = e.id_ejemplar "
-           + "JOIN libros l ON e.id_libro = l.id_libro "
-           + "JOIN categorias cat ON l.id_categoria = cat.id_categoria "
-           + "JOIN generos g ON l.id_genero = g.id_genero " 
-           + "WHERE p.fecha_prestamo BETWEEN ? AND ? " 
-           + "AND p.fecha_devolucion IS NOT NULL"
-           + " ORDER BY p.id_prestamo ASC";
+           + "JOIN prestamos p ON dp.IDPrestamo = p.IDPrestamo "
+           + "JOIN clientes c ON p.DNICliente = c.DNI "
+           + "JOIN ejemplares e ON dp.IDEjemplar = e.IDEjemplar "
+           + "JOIN libros l ON e.IDLibro = l.IDLibro "
+           + "JOIN categorias cat ON l.IDCategoria = cat.IDCategoria "
+           + "JOIN generos g ON l.IDGenero = g.IDGenero "
+           + "WHERE p.FechaPrestamo BETWEEN ? AND ? " 
+           + "AND p.FechaDevolucion IS NOT NULL"
+           + " ORDER BY p.IDPrestamo ASC";
         
         try {
             // Conecta con el servidor 
@@ -165,7 +167,7 @@ public class ReporteLogica {
             pst.setDate(1, fechaInicioSql);
             pst.setDate(2, fechaFinSql);
             
-             // Dispara la orden en MySQL y almacena el puntero de las filas devueltas en 'rs'
+             // Lanza la consulta filtrada y obtiene filas
             ResultSet rs = pst.executeQuery(); 
             //Formato de fecha
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
@@ -177,7 +179,7 @@ public class ReporteLogica {
                 cliente.setDni(rs.getString("dni")); 
                 
                 Prestamo prestamo = new Prestamo();
-                // Asignamos datos usando conversión limpia 
+                // Asignamos datos usando conversión limpia a localDate
                 prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
                 prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
                 prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
@@ -232,29 +234,32 @@ public class ReporteLogica {
         // Instancia una lista dinámica vacía para alojar los años únicos encontrados
         ArrayList<Integer> anios = new ArrayList<>();
         //Consulta sql
-        String sql = "SELECT DISTINCT YEAR(p.fecha_prestamo) AS anio "
-                   + "FROM prestamos p "
-                   + "WHERE p.fecha_devolucion IS NOT NULL "
-                   + "ORDER BY anio DESC";
+        String sql = "SELECT DISTINCT YEAR(p.FechaPrestamo) AS anio "
+                + "FROM prestamos p "
+                + "WHERE p.FechaDevolucion IS NOT NULL "
+                + "ORDER BY anio DESC";
         try {            
-            // Conecta con el servidor 
+            // Conexion con la base de datos
             Connection cn = ConnectMySQL.conn();
             // Condicion: si el conector de la base de datos es igual a un null, falla 
             if (cn == null) {
             JOptionPane.showMessageDialog(null, "Error");
             return anios;
             }
+            // Prepara la consulta parametrizada
             PreparedStatement pst = cn.prepareStatement(sql);
+            // Lanza la consulta
             ResultSet rs = pst.executeQuery();
             
             //bucle donde recorre fila por fila mientras existan registros hacia adelante
-            while (rs.next()) {                
+            while (rs.next()) {       
+                //Extrae el valor de anio y lo agrega a la lista
                 anios.add(rs.getInt("anio"));
             }
             rs.close();
             pst.close();
             cn.close();
-            
+            //Captura de Fallos
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al obtener años de ganacia: " + e.getMessage());
         }

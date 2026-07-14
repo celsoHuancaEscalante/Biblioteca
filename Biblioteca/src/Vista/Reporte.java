@@ -7,9 +7,16 @@ package Vista;
 import LogicaReporteIngresos.ReporteFila;
 import LogicaReporteIngresos.ReporteGrafico;
 import LogicaReporteIngresos.ReporteLogica;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartPanel;
@@ -64,7 +71,7 @@ public class Reporte extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1100, 550));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setBackground(new java.awt.Color(51, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -221,13 +228,20 @@ public class Reporte extends javax.swing.JPanel {
 
         jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 170, 210));
 
-        btn_Graficar.setText("Grafico de Barras");
+        btn_Graficar.setBackground(java.awt.SystemColor.activeCaption);
+        btn_Graficar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Graficar.setForeground(new java.awt.Color(0, 0, 0));
+        btn_Graficar.setText("Prestamos por Genero");
+        btn_Graficar.setActionCommand("Prestamos por Genero");
         btn_Graficar.addActionListener(this::btn_GraficarActionPerformed);
-        jPanel2.add(btn_Graficar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 10, -1, -1));
+        jPanel2.add(btn_Graficar, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 10, 160, 30));
 
+        btn_Graficar2.setBackground(java.awt.SystemColor.activeCaption);
+        btn_Graficar2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Graficar2.setForeground(new java.awt.Color(0, 0, 0));
         btn_Graficar2.setText("Ganancias");
         btn_Graficar2.addActionListener(this::btn_Graficar2ActionPerformed);
-        jPanel2.add(btn_Graficar2, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 10, -1, -1));
+        jPanel2.add(btn_Graficar2, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 10, 120, 30));
 
         add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1130, 590));
     }// </editor-fold>//GEN-END:initComponents
@@ -254,8 +268,43 @@ public class Reporte extends javax.swing.JPanel {
         lbl_DineroGanado.setText(String.format("S/ %.2f", sumaDinero));
     }
     
-    
-    
+    private String validarYformatearFecha (String fechaStr, String campoNombre) {
+        if (fechaStr == null || fechaStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo: '" + campoNombre + "' no puede estar vacio. ", "Atencion", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+        String fechaLimpia = fechaStr.trim();
+        
+        //Filtro de solo numeros y barras
+        if (!fechaLimpia.matches("^\\d{1,2}/\\d{1,2}/\\d{4}$")) {
+        JOptionPane.showMessageDialog(this, 
+            "Error en '" + campoNombre + "': Formato incorrecto.\n" +
+            "Debe usar el formato dd/mm/yyyy (ejemplo: 01/08/2025 o 1/08/2025).\n" +
+            "No use letras, espacios, guiones ni puntos.", 
+            "Formato Incorrecto", JOptionPane.ERROR_MESSAGE);
+        return null;
+        }
+        
+        // Filtro de calendario
+        try {
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT);
+            
+            LocalDate fechaParsed = LocalDate.parse(fechaLimpia, formateador);
+            
+            // Si la fecha es valida, la exportamos al formato de Mysql
+            DateTimeFormatter formateadorOutput = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return fechaParsed.format(formateadorOutput);
+            
+        } catch (DateTimeParseException e) {
+            // Aqui caera unicamente si meten fechas irreales
+            JOptionPane.showMessageDialog(this, 
+            "Error en '" + campoNombre + "': La fecha '" + fechaLimpia + "' no existe en el calendario.\n" +
+            "Verifique que el día sea correcto para el mes seleccionado (ej: Febrero tiene 28 o 29 días).", 
+            "Fecha Inexistente", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
      public void mostrarTabla () {
          //Reinicia el contador de filas
          modelo.setRowCount(0);
@@ -342,21 +391,41 @@ public class Reporte extends javax.swing.JPanel {
     }//GEN-LAST:event_btn_Graficar2ActionPerformed
 
     private void btn_BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BuscarActionPerformed
-        // Creacion de los objetos de tiempo de los componentes del calendar        
-        java.util.Date FechaInicio = jdc_De.getDate();
-        java.util.Date FechaFin = jdc_Hasta.getDate();
-        // Validacion 
-        if (FechaInicio == null || FechaFin == null) {
-            JOptionPane.showMessageDialog(this, "Por favor seleccione ambas fechas para buscar");
+        // Extraemos el texto crudor directamente de la caja del jchowser
+        String textoDe = ((JTextField) jdc_De.getDateEditor().getUiComponent()).getText();
+        String textoHasta = ((JTextField) jdc_Hasta.getDateEditor().getUiComponent()).getText();
+        
+        // Validacion del campo de fecha de inicio "De"
+        String fechaDeSql = validarYformatearFecha(textoDe, "De");
+        if (fechaDeSql == null) {
             return;
         }
-        // Validacion de rango
-        //Condicion: evalua si la fecha inicial esta situada en el tiempo despues de la fecha final
-        if (FechaInicio.after(FechaFin)) {
-            JOptionPane.showMessageDialog(this, "La fecha 'De' no puede ser posterior a la fecha 'Hasta'.");
+        
+        // Validar el campo de fecha de fin "Hasta"
+        String FechaHastaSql = validarYformatearFecha(textoHasta, "Hasta");
+        if (FechaHastaSql == null) {
             return;
         }
-        FiltrarTablaPorFecha(FechaInicio, FechaFin);
+        
+        // Convertimos los textos ya validados en formato "yyyy-MM-dd"
+        SimpleDateFormat formateadorDate = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fechaInicio = null;
+        java.util.Date fechaFin = null;
+        
+        try {
+            fechaInicio = formateadorDate.parse(fechaDeSql);
+            fechaFin = formateadorDate.parse(FechaHastaSql);
+        } catch (ParseException e) {
+            // Este bloque nunca se ejecutará porque el validador previo ya garantizó que el formato es perfecto
+            System.out.println("Error al parsear las fechas seguras: " + e.getMessage());
+        }
+        
+        //Validación del rango lógico: que la fecha de inicio no sea posterior a la de fin
+        if (fechaInicio != null  && fechaFin != null && fechaInicio.after(fechaFin)) {
+            JOptionPane.showMessageDialog(this, "La fecha 'De' no puede ser posterior a la fecha 'Hasta'.", "Rango de Fechas Incorrecto", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        FiltrarTablaPorFecha(fechaInicio, fechaFin);
     }//GEN-LAST:event_btn_BuscarActionPerformed
 
     private void btn_RefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RefreshActionPerformed
