@@ -1,6 +1,8 @@
 
 package LogicaDaniel; //logica daniel
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,8 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;  
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 
@@ -58,7 +62,9 @@ public class ReporteGrafico {
                 "Generos Literarios", 
                 "Generos", 
                 "Canitdad de Prestamos", 
-                dataset, // El origen  de datos 
+
+                dataset, // El origen de los datos
+
                 PlotOrientation.VERTICAL, 
                 false, //Indica que no queremos mostrar la leyenda de series
                 true, //Activa las herramientas de ayuda flotantes
@@ -66,6 +72,10 @@ public class ReporteGrafico {
         
         // Recupera la zona de trazado del gráfico y la transforma a su subtipo CategoryPlot
         CategoryPlot plot = chart.getCategoryPlot();
+
+        //Color de las barras 3d
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(0, 102, 204));
         // Extrae el eje vertical (Y) y lo convierte a NumberAxis para poder modificar su comportamiento numérico
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         // Forza al eje vertical a usar números enteros 
@@ -75,6 +85,7 @@ public class ReporteGrafico {
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
         
         
+
         // Envia el grafico envuelto dentro de un contenedor swing
         return new ChartPanel(chart);
     }
@@ -174,14 +185,20 @@ public class ReporteGrafico {
         //Creacion del objeto con la fabrica de graficos
         JFreeChart chart = ChartFactory.createLineChart("", 
                 tituloEjeX, "Monto Acumulado (S/)", 
-                dataset, // El origen  de datos 
+
+                dataset, // El origen de datos 
                 PlotOrientation.VERTICAL, 
-                true,   // Muestra la pequeña leyenda de series de color abajo ("Ganancias (S/)")
+                true, // Muestra la pequeña leyenda de series de color abajo ("Ganancias (S/)")
                 true, // Activa las etiquetas de ayuda flotantes para el usuario
                 false); // Indica que no queremos mapear enlaces de internet interactivos
-        
         // Recupera la zona de trazado del gráfico y la transforma a su subtipo CategoryPlot
         CategoryPlot plot = chart.getCategoryPlot();
+        //Cambio de color 
+        LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(255, 102, 0));
+        renderer.setSeriesStroke(0, new BasicStroke(3.0f));
+        renderer.setSeriesShapesVisible(0, true);
+
         // Recupera el eje del rango de dinero
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         // Fuerza al eje a usar numeros enteros

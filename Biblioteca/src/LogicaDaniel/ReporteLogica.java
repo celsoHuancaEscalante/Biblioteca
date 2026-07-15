@@ -70,7 +70,7 @@ public class ReporteLogica {
             PreparedStatement pst = cn.prepareStatement(sql);
             // Dispara la orden en MySQL y almacena el puntero de las filas devueltas en 'rs'
             ResultSet rs = pst.executeQuery(); 
-            // Define el formato latino para convertir fechas en caso de uso alterno
+            // Define el formato para convertir 
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             
             // Recorre el ResultSet fila por fila mientras existan registros hacia adelante
@@ -78,9 +78,9 @@ public class ReporteLogica {
              // 1. Reconstruimos de los objetos o datos
                 Cliente cliente = new Cliente();
                 cliente.setDni(rs.getString("dni"));
-                
+            
                 Prestamo prestamo = new Prestamo();
-                // Asignamos datos usando conversión limpia a LocalDate
+                // Asignamos datos usando conversión limpia
                 prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
                 prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
                 prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
@@ -168,17 +168,19 @@ public class ReporteLogica {
             pst.setDate(2, fechaFinSql);
             
             // Lanza la consulta filtrada y obtiene las filas
+
             ResultSet rs = pst.executeQuery(); 
             //Formato de fecha
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             
+             // Recorre el ResultSet fila por fila mientras existan registros hacia adelante
             while (rs.next()) {                
              // 1. Reconstruimos de los objetos o datos 
                 Cliente cliente = new Cliente();
                 cliente.setDni(rs.getString("dni")); 
                 
                 Prestamo prestamo = new Prestamo();
-                // Asignamos datos usando conversión limpia a LocalDate
+                // Asignamos datos usando conversión limpia a localDate
                 prestamo.setIdPrestamo(rs.getInt("id_prestamo"));
                 prestamo.setFechaPrestamo(rs.getDate("fecha_prestamo").toLocalDate());
                 prestamo.setFechaDevolucion(rs.getDate("fecha_devolucion").toLocalDate());
@@ -225,28 +227,38 @@ public class ReporteLogica {
         return lista;
     }
     
+    /**
+     * Consulta la base de datos para extraer los años únicos (sin repetir) en los que existen registros de ganancias.
+     * @return Un ArrayList cargado con números enteros (Integer) ordenados descendentemente.
+     */
     public ArrayList<Integer> obtenerAniosConGanacias () {
+        // Instancia una lista dinámica vacía para alojar los años únicos encontrados
         ArrayList<Integer> anios = new ArrayList<>();
-        // Consulta sql
+
+        //Consulta sql
         String sql = "SELECT DISTINCT YEAR(p.FechaPrestamo) AS anio "
-           + "FROM prestamos p "
-           + "WHERE p.FechaDevolucion IS NOT NULL "
-           + "ORDER BY anio DESC";
+                + "FROM prestamos p "
+                + "WHERE p.FechaDevolucion IS NOT NULL "
+                + "ORDER BY anio DESC";
         try {            
-            //Conexion con la base de datos
+            // Conexion con la base de datos
+
             Connection cn = ConnectMySQL.conn();
+            // Condicion: si el conector de la base de datos es igual a un null, falla 
             if (cn == null) {
             JOptionPane.showMessageDialog(null, "Error");
             return anios;
             }
-            //Prepara la consulta parametrizada 
+
+            // Prepara la consulta parametrizada
             PreparedStatement pst = cn.prepareStatement(sql);
-            //Lanza la consulta
+            // Lanza la consulta
             ResultSet rs = pst.executeQuery();
             
-            //Recorre fila por fila
-            while (rs.next()) {    
-                //Extrae el valor de "anio" y lo agrega a la lista
+            //bucle donde recorre fila por fila mientras existan registros hacia adelante
+            while (rs.next()) {       
+                //Extrae el valor de anio y lo agrega a la lista
+
                 anios.add(rs.getInt("anio"));
             }
             rs.close();
@@ -254,6 +266,7 @@ public class ReporteLogica {
             cn.close();
             
             //Captura de fallos
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al obtener años de ganacia: " + e.getMessage());
         }
