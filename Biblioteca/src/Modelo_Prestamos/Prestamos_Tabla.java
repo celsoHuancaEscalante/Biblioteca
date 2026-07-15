@@ -11,13 +11,16 @@ public class Prestamos_Tabla {
     private LocalDate fechaPrestamo;
     private LocalDate fechaEntrega;
     private String estadoPrestamo;
-    private double multaAcumulada;
+    private double pagoTotal;
+
+    private int diasEntrePrestamoYEntrega;
+    private int diasAtraso;
 
     public Prestamos_Tabla() {}
 
     public Prestamos_Tabla(int idPrestamo, String dni, String usuario, String libro,
-                         LocalDate fechaPrestamo, LocalDate fechaEntrega,
-                         String estadoPrestamo, double multaAcumulada) {
+                           LocalDate fechaPrestamo, LocalDate fechaEntrega,
+                           String estadoPrestamo, double pagoTotal) {
         this.idPrestamo = idPrestamo;
         this.dni = dni;
         this.usuario = usuario;
@@ -25,40 +28,36 @@ public class Prestamos_Tabla {
         this.fechaPrestamo = fechaPrestamo;
         this.fechaEntrega = fechaEntrega;
         this.estadoPrestamo = estadoPrestamo;
-        this.multaAcumulada = multaAcumulada; }
-
+        this.pagoTotal = pagoTotal;}
     
-    
-    
-    public int getIdPrestamo() { return idPrestamo; }
+    public int getIdPrestamo() {return idPrestamo; }
 
-    public void setIdPrestamo(int idPrestamo) { this.idPrestamo = idPrestamo; }
+    public void setIdPrestamo(int idPrestamo) { this.idPrestamo = idPrestamo;}
 
-    public String getDni() { return dni; }
+    public String getDni() {return dni;}
 
-    public void setDni(String dni) { this.dni = dni; }
+    public void setDni(String dni) {this.dni = dni;}
 
-    public String getUsuario() { return usuario; }
+    public String getUsuario() {return usuario;}
 
-    public void setUsuario(String usuario) { this.usuario = usuario; }
+    public void setUsuario(String usuario) {this.usuario = usuario;}
 
-    public String getLibro() { return libro; }
+    public String getLibro() {return libro;}
 
-    public void setLibro(String libro) { this.libro = libro; }
+    public void setLibro(String libro) {this.libro = libro;}
 
-    public LocalDate getFechaPrestamo() { return fechaPrestamo; }
+    public LocalDate getFechaPrestamo() {return fechaPrestamo;}
 
-    public void setFechaPrestamo(LocalDate fechaPrestamo) { this.fechaPrestamo = fechaPrestamo; }
+    public void setFechaPrestamo(LocalDate fechaPrestamo) {this.fechaPrestamo = fechaPrestamo;}
 
-    public LocalDate getFechaEntrega() { return fechaEntrega; }
+    public LocalDate getFechaEntrega() {return fechaEntrega;}
 
-    public void setFechaEntrega(LocalDate fechaEntrega) { this.fechaEntrega = fechaEntrega; }
+    public void setFechaEntrega(LocalDate fechaEntrega) {this.fechaEntrega = fechaEntrega;}
 
-    public String getEstadoPrestamo() { return estadoPrestamo; }
+    public String getEstadoPrestamo() {return estadoPrestamo;}
 
-    public void setEstadoPrestamo(String estadoPrestamo) { this.estadoPrestamo = estadoPrestamo; }
+    public void setEstadoPrestamo(String estadoPrestamo) {this.estadoPrestamo = estadoPrestamo;}
 
-    public double getMultaAcumulada() { return multaAcumulada; }
+    public double getPagoTotal() {return pagoTotal;}
 
-    public void setMultaAcumulada(double multaAcumulada) { this.multaAcumulada = multaAcumulada; }}
-
+    public void setPagoTotal(double pagoTotal) {this.pagoTotal = pagoTotal;}}
