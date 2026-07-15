@@ -10,9 +10,12 @@ public class Cliente {
     private String correo;
     private LocalDate fechaRegistro; 
 
+
+        // FrmPrestamos_Jhosuar//
+
     public Cliente() {
     }
-    
+
     public Cliente(String dni, String primerNombre, String primerApellido, String telefono, String correo) {
         this.dni = dni;
         this.primerNombre = primerNombre;
@@ -69,6 +72,5 @@ public class Cliente {
     public void setFechaRegistro(LocalDate fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-    
-    
 }
+
