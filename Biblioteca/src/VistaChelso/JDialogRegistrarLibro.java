@@ -34,7 +34,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
         inicializarTabla();
         cargarGenerosEnComboBox();
         cargarTabla();
-    
+        libroActual = null;
         // Agregar doble clic en tabla para eliminar
         tblLibros.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -272,7 +272,7 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
                 .addGap(27, 27, 27))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(157, 157, 157)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(42, 42, 42)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -295,21 +295,20 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
                                         .addComponent(txtAñoPublicación))
                                     .addComponent(txtAutor, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(93, 93, 93)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, 432, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnModificar)
-                                .addGap(46, 46, 46)
-                                .addComponent(btnLimpiar)
-                                .addGap(42, 42, 42)
-                                .addComponent(btnGuardarLibro)
-                                .addGap(53, 53, 53))))
+                        .addGap(109, 109, 109)
+                        .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, 432, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(47, 47, 47)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnModificar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnGuardarLibro)
+                                .addGap(116, 116, 116)
+                                .addComponent(btnLimpiar))
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -343,12 +342,12 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+                .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGuardarLibro)
                     .addComponent(btnModificar)
+                    .addComponent(btnGuardarLibro)
                     .addComponent(btnLimpiar))
-                .addGap(12, 12, 12)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnRegresar)
@@ -380,7 +379,98 @@ public class JDialogRegistrarLibro extends javax.swing.JDialog {
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnGuardarLibroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarLibroActionPerformed
-        guardarLibro();
+        //guardarLibro();
+        
+        boolean guardando = false;
+        if (guardando) {
+            return;
+        }
+    
+        guardando = true;  // ← Marcar que está guardando
+    
+        try {
+        // ========== OBTENER VALORES DE LOS CAMPOS ==========
+            String titulo = txtTitulo.getText().trim();
+            String autor = txtAutor.getText().trim();
+            String editorial = txtEditorial.getText().trim();
+            String anoStr = txtAñoPublicación.getText().trim();
+            String genero = cboGenero.getSelectedItem().toString();
+            String stockStr = txtStock.getText().trim();
+        
+        // ========== VALIDACIÓN 1: CAMPOS VACÍOS ==========
+            if (titulo.isEmpty() || autor.isEmpty() || editorial.isEmpty() || 
+                anoStr.isEmpty() || stockStr.isEmpty()) {
+            
+                JOptionPane.showMessageDialog(this, 
+                    "Por favor, complete todos los campos para registrar el libro.",
+                    "Campos Incompletos",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        
+        // ========== VALIDACIÓN 2: AÑO DEBE SER NÚMERO ==========
+            int ano;
+            try {
+               ano = Integer.parseInt(anoStr);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, 
+                    "El año debe ser un número válido.",
+                    "Año Inválido",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // ========== VALIDACIÓN 2B: AÑO NO PUEDE SER FUTURO ==========
+            int anoActual = java.time.LocalDate.now().getYear();
+            if (ano > anoActual) {
+                JOptionPane.showMessageDialog(this, 
+                    "El año de publicación no puede ser futuro.\n" +
+                    "Año actual: " + anoActual + "\n" +
+                    "Año ingresado: " + ano,
+                    "Año Futuro",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        
+        // ========== VALIDACIÓN 3: STOCK DEBE SER NÚMERO POSITIVO ==========
+            int stock;
+            try {
+                stock = Integer.parseInt(stockStr);
+            
+                if (stock <= 0) {
+                    JOptionPane.showMessageDialog(this, 
+                        "El stock debe ser un número positivo (mayor a 0).",
+                        "Stock Inválido",
+                        JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, 
+                    "El stock debe ser un número válido.",
+                    "Stock Inválido",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        
+        // ========== SI PASA TODAS LAS VALIDACIONES, GUARDAR ==========
+            String resultado = logica.guardarLibro(titulo, autor, editorial, ano, genero, stock, libroActual);
+        
+        // ========== MOSTRAR RESULTADO ==========
+            JOptionPane.showMessageDialog(this, 
+                resultado,
+                "Resultado",
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        // ========== SI GUARDÓ EXITOSAMENTE, LIMPIAR Y ACTUALIZAR ==========
+            if (resultado.contains("correctamente") || resultado.contains("registrado")) {
+                //limpiarFormulario();
+                cargarTabla();
+                jfrm.actualizarTablaDesdeDialog();
+            }
+        
+        } finally {
+            guardando = false;  // ← Permitir ejecuciones futuras
+        }
     }//GEN-LAST:event_btnGuardarLibroActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
