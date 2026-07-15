@@ -1,9 +1,9 @@
 package VistaDeProyecto;
 
+import RegistroLibros.JfrmBuscarLibro;
 import ReporteIngresos.Reporte;
 import RegistroClientes.PanelClientes;
 import RegistroPrestamos.FrmPrestamos;
-import VistaChelso.JfrmBuscarLibro;
 import java.awt.CardLayout;
 
 public class frmMenu extends javax.swing.JFrame {
